@@ -1,4 +1,4 @@
-package br.puc.devops.escola;
+package br.puc.devops.evelyne;
 
 import java.io.Serializable;
 
