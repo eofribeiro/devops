@@ -19,7 +19,7 @@ jobs:
       - name: Simulando CD
         uses: actions/upload-artifact@v4
         with:
-         name: projeto-zipado.zip
+         name: projeto-zipado #.zip
          path: |
           '**.java'
-          README.md
+#          README.md
