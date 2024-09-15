@@ -1,0 +1,25 @@
+name: Continuous delivery
+on:
+  push:
+    branches:
+      - main #ou qualquer outra branch
+
+jobs:
+  # ------------------------------------------------------------------------------------------------------------------------------------------------
+  # Event `pull_request`: Compare the last commit of the main branch or last remote commit of the PR branch -> to the current commit of a PR branch.
+  # ------------------------------------------------------------------------------------------------------------------------------------------------
+  deliver:
+    runs-on: ubuntu-latest #windows-latest || macos-latest
+    name: Empacotar artefatos
+    steps:
+      - name: Chekout repository code
+        id: checkout_rep
+        uses: actions/checkout@v4
+
+      - name: Simulando CD
+        uses: actions/upload-artifact@v4
+        with:
+         name: projeto-zipado.zip
+         path: |
+          '**.java'
+          README.md
