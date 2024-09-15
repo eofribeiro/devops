@@ -26,7 +26,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest #windows-latest || macos-latest
     name: Fazer deploy
-    nees: deliver
+    needs: deliver
     steps:
      - uses: actions/download-artifact@v4
        with:
