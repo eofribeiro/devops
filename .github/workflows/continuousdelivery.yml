@@ -19,7 +19,7 @@ jobs:
       - name: Simulando Continuous delivery
         uses: actions/upload-artifact@v4
         with:
-         name: projeto-zipado #.zip
+         name: projeto-zipado
          path: |
           **.java
           README.md
