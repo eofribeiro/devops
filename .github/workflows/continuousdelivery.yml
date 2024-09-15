@@ -30,6 +30,6 @@ jobs:
     steps:
      - uses: actions/download-artifact@v4
        with:
-        name: projetozipado.zip
+        name: projeto-zipado.zip
      - name: Mostrar a estrutura dos arquivos baixados
        run: ls -R
