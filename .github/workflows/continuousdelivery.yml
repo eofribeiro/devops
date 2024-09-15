@@ -21,4 +21,15 @@ jobs:
         with:
          name: projeto-zipado #.zip
          path: |
-          path/src
+          **.java
+          README.md
+  deploy:
+    runs-on: ubuntu-latest #windows-latest || macos-latest
+    name: Fazer deploy
+    nees: deliver
+    steps:
+     - uses: actions/download-artifact@v4
+       with:
+        name: projetozipado.zip
+     - name: Mostrar a estrutura dos arquivos baixados
+       run: ls -R
