@@ -1,0 +1,17 @@
+FROM openjdk:8
+
+# Set environment
+
+ENV JAVA_HOME /opt/jdk
+
+ENV PATH ${PATH}:${JAVA_HOME}/bin   
+
+# COPY myJarFolder from local repository to the image
+
+COPY ./myJarFolder /usr/local/myJarFolder
+
+# Start the image with the jar file as the entrypoint
+
+ENTRYPOINT ["java", "-jar", "/usr/local/myJarFolder/myJarFile.jar"]
+
+# EOF

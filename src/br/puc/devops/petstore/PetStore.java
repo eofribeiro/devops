@@ -77,7 +77,7 @@ public class PetStore {
 			for (int i=0; i < mamiferos.size(); i++)
 				outputStream.writeObject(mamiferos.get(i));
 		} catch (FileNotFoundException ex) {
-			JOptionPane.showMessageDialog(null,"Imposs�vel criar arquivo!");
+			JOptionPane.showMessageDialog(null,"Impossível criar arquivo!");
 			ex.printStackTrace();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -113,7 +113,7 @@ public class PetStore {
 		} catch (ClassNotFoundException ex) {
 			ex.printStackTrace();
 		} catch (FileNotFoundException ex) {
-			JOptionPane.showMessageDialog(null,"Arquivo com mam�feros N�O existe!");
+			JOptionPane.showMessageDialog(null,"Arquivo com mamíferos não existe!");
 			ex.printStackTrace();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -137,12 +137,12 @@ public class PetStore {
 
 		do {
 			menu = "Controle PetStore\n" +
-					"Op��es:\n" + 
-					"1. Entrar Mam�feros\n" +
-					"2. Exibir Mam�feros\n" +
-					"3. Limpar Mam�feros\n" +
-					"4. Gravar Mam�feros\n" +
-					"5. Recuperar Mam�feros\n" +
+					"Opções:\n" + 
+					"1. Entrar Mamíferos\n" +
+					"2. Exibir Mamíferos\n" +
+					"3. Limpar Mamíferos\n" +
+					"4. Gravar Mamíferos\n" +
+					"5. Recuperar Mamíferos\n" +
 					"9. Sair";
 			entrada = JOptionPane.showInputDialog (menu + "\n\n");
 			
@@ -154,9 +154,9 @@ public class PetStore {
 
 			switch (opc1) {
 			case 1:// Entrar dados
-				menu = "Entrada de Animais Mam�feros\n" +
-						"Op��es:\n" + 
-						"1. C�o\n" +
+				menu = "Entrada de Animais Mamíferos\n" +
+						"Oplões:\n" + 
+						"1. Cão\n" +
 						"2. Gato\n";
 
 				entrada = JOptionPane.showInputDialog (menu + "\n\n");
@@ -168,13 +168,13 @@ public class PetStore {
 				case 2: mamiferos.add((Mamifero)leGato());
 				break;
 				default: 
-					JOptionPane.showMessageDialog(null,"Animal mam�fero para entrada N�O escolhido!");
+					JOptionPane.showMessageDialog(null,"Animal mamífero para entrada NÃO escolhido!");
 				}
 
 				break;
 			case 2: // Exibir dados
 				if (mamiferos.size() == 0) {
-					JOptionPane.showMessageDialog(null,"Entre com animais mam�feros primeiramente");
+					JOptionPane.showMessageDialog(null,"Entre com animais mamíferos primeiramente");
 					break;
 				}
 				String dados = "";
@@ -185,7 +185,7 @@ public class PetStore {
 				break;
 			case 3: // Limpar Dados
 				if (mamiferos.size() == 0) {
-					JOptionPane.showMessageDialog(null,"Entre com animais mam�feros primeiramente");
+					JOptionPane.showMessageDialog(null,"Entre com animais mamíferos primeiramente");
 					break;
 				}
 				mamiferos.clear();
@@ -193,7 +193,7 @@ public class PetStore {
 				break;
 			case 4: // Grava Dados
 				if (mamiferos.size() == 0) {
-					JOptionPane.showMessageDialog(null,"Entre com animais mam�feros primeiramente");
+					JOptionPane.showMessageDialog(null,"Entre com animais mamíferos primeiramente");
 					break;
 				}
 				salvaMamiferos(mamiferos);
