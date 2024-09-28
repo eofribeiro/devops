@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE natapi-defs PUBLIC "natapi" "natapi.dtd">
+
+<natapi-defs>
+	<programa nome="FIH9NERR">
+		<entrada tratamento="tamanho-fixo" classe="br.puc.devops.hibernatural.FIH9NERR">
+			<campo nome="dbid" tipo="String" tam="3" />
+		</entrada>
+		<saida tratamento="tamanho-fixo" classe="br.puc.devops.hibernatural.FIH9NERR">
+			<campo nome="dbid" tipo="String" tam="3" />
+		</saida>
+	</programa>
+</natapi-defs>

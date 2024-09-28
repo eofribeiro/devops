@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="Biblioteca - HiberNatural" default="jar" basedir=".">
+	
+	<!-- configurações gerais -->
+	<property name="name"                           value="hibernatural-devops"/>
+    <property name="version"                        value="1.0-jdk11"/>
+	<property name="jarfile"                        value="${name}-${version}.jar"/>
+	
+	<!-- bibliotecas -->
+	<property name="lib.dir"                        value="${basedir}/lib"/>
+	<property name="bkp.dir"                        value="${basedir}/bkp"/>
+	
+	<!-- diretórios para construção -->   
+	<property name="build.dir"                      value="${basedir}/bin"/>
+
+	
+	<!-- =================================================================== -->
+	<!-- Cria arquivo .jar para distribuição de biblioteca em aplicativos    -->
+	<!-- =================================================================== -->
+	<target name="jar" description="Gera arquivo para distribuição da biblioteca">
+		<echo message="Gerando biblioteca ${jarfile}..."/>
+		<move todir="${bkp.dir}">
+			<fileset dir="${basedir}">
+			    <include name="${name}*.jar"/>
+			</fileset>
+		</move>
+		<jar jarfile="${jarfile}" basedir="${build.dir}" includes="br/puc/devops/**,META-INF/**"/>
+		
+	</target>
+	
+</project>
