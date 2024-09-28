@@ -10,7 +10,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 
 public class Natural {
-	private static final String VERSION = "Vers1.0 - Cliente para Midlleware JASPPION";
+	private static final String VERSION = "Versao - 1.0 - Cliente para Midlleware JASPPION";
 
 	private String chave;
 
@@ -41,8 +41,8 @@ public class Natural {
 		this.senha = "";
 		this.logon = "";
 		this.ambiente = "D";
-		this.serverAddr = "10.15.61.10";
-		this.serverPort = "6080";
+		this.serverAddr = "10.15.61.99";
+		this.serverPort = "9999";
 		this.tipoPgm = "dbcon";
 		this.parmSaida = "";
 	}
@@ -129,10 +129,10 @@ public class Natural {
 				this.logon = String.valueOf(this.logon) + "        ".substring(0, 8 - this.logon.length());
 			this.logon = this.logon.substring(0, 8).toUpperCase();
 			if (this.serverAddr.length() == 0)
-				this.serverAddr = "10.15.61.10";
+				this.serverAddr = "10.15.61.99";
 			this.serverAddr = this.serverAddr.trim();
 			if (this.serverPort.length() == 0)
-				this.serverPort = "6080";
+				this.serverPort = "9999";
 			this.serverPort = this.serverPort.trim();
 			if (this.chave.length() == 0) {
 				this.paRC = -9999;
@@ -233,6 +233,6 @@ public class Natural {
 	}
 
 	public String getVersion() {
-		return "Vers1.0 - Cliente para Midlleware JASPPION";
+		return VERSION;
 	}
 }
