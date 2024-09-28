@@ -62,7 +62,7 @@ public class PetStore {
 	public int retornaInteiro(String entrada) { // retorna um valor inteiro
 		int numInt;
 
-		//Enquanto n�o for poss�vel converter o valor de entrada para inteiro, permanece no loop
+		//Enquanto nao for possivel converter o valor de entrada para inteiro, permanece no loop
 		while (!this.intValido(entrada)) {
 			entrada = JOptionPane.showInputDialog(null, "Valor incorreto!\n\nDigite um número inteiro.");
 		}
