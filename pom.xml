@@ -203,6 +203,7 @@
 	</dependencies>
 	<build>
 		<sourceDirectory>src/br/puc/devops</sourceDirectory>
+		<testSourceDirectory>src/test/resources</testSourceDirectory>		
 		<finalName>devops</finalName>
 		<resources>
 			<resource>
