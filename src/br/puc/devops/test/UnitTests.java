@@ -7,7 +7,7 @@ import br.puc.devops.petstore.PetStore1;
 import br.puc.devops.util.natapi.Util;
 import junit.framework.TestCase;
 
-public class TestarSistema extends TestCase {
+public class UnitTests extends TestCase {
 
 	/**
 	 * Testa se o aplicativo de escola está funcionando
