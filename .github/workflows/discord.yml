@@ -1,0 +1,17 @@
+name: Discord
+on:
+ push
+
+jobs:
+  discord:
+    runs-on: ubuntu-latest #windows-latest || macos-latest
+    steps:
+      #- name: Chekout repository code
+      #  id: checkout_rep
+      - uses: actions/checkout@v4
+      - name: Aviso de commit
+        uses: Sniddl/discord-commits@v1.6
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          template: "avatar-with-link"
+          include-extras: true

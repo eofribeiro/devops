@@ -23,11 +23,11 @@ public abstract class Estudante implements Serializable {
 	}
 	public String toString() {
 		String retorno = "";
-		retorno += "Matr�cula: "         + this.matricula     + "\n";
+		retorno += "Matrícula: "         + this.matricula     + "\n";
 		retorno += "Nome: "              + this.nome     + "\n";
 		retorno += "Idade: "             + this.idade    + " anos\n";
-		retorno += "Respons�vel: "       + this.responsavel     + "\n";
-		retorno += "N�vel de Ensino: "   + this.nivel  + "\n";
+		retorno += "Responsável: "       + this.responsavel     + "\n";
+		retorno += "Nível de Ensino: "   + this.nivel  + "\n";
 		retorno += "Cuidados: \n"          + cuidados()        + "\n";
 		retorno += "Atividades: \n"        + atividades()        + "\n";
 		retorno += "Oficinas: \n"          + oficinas()        + "\n";		

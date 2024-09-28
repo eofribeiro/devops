@@ -33,7 +33,7 @@ public class EscolaExemplo {
 	public void excluirEstudante(Estudante est) {
 		if (this.estudantes.contains(est)) {
 			this.estudantes.remove(est);
-			System.out.println("[Estudante " + est.toString() + "exclu�do com sucesso!]\n");
+			System.out.println("[Estudante " + est.toString() + "excluído com sucesso!]\n");
 		} else {
 			System.out.println("Estudante inexistente!\n");
 		}
@@ -41,7 +41,7 @@ public class EscolaExemplo {
 
 	public void excluirEstudantes() {
 		estudantes.clear();
-		System.out.println("Estudantes exclu�dos com sucesso!\n");
+		System.out.println("Estudantes excluídos com sucesso!\n");
 	}
 
 	public void gravarEstudantes() {
@@ -116,9 +116,9 @@ public class EscolaExemplo {
 		PreEscolar maria = new PreEscolar(1, "Maria", 2, "Angelina");
 		PreEscolar luan = new PreEscolar(2, "Luan", 4, "Rodrigo");
 		EnsinoFundamental nathan = new EnsinoFundamental(3, "Nathan", 6, "Evelyne");
-		EnsinoFundamental inae = new EnsinoFundamental(4, "Ina�", 7, "M�nica");
+		EnsinoFundamental inae = new EnsinoFundamental(4, "Inaê", 7, "Mônica");
 		EnsinoMedio nicolas = new EnsinoMedio(5, "Nicolas", 17, "Marcelo");
-		EnsinoMedio isabela = new EnsinoMedio(6, "Isabela", 18, "S�nia");
+		EnsinoMedio isabela = new EnsinoMedio(6, "Isabela", 18, "Sônia");
 
 		esc.adicionaEstudante(maria);
 		esc.adicionaEstudante(luan);
