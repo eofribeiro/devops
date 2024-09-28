@@ -46,7 +46,7 @@ public class UnitTests extends TestCase {
 	}
 
 	/**
-	 * Testa se a rotina de validação de CPF está funcionando
+	 * Testa se a rotina de valida��o de CPF está funcionando
 	 */
 
 	@Test
@@ -66,7 +66,7 @@ public class UnitTests extends TestCase {
 	}
 
 	/**
-	 * Testa se a rotina de validação de CPF inválido está funcionando
+	 * Testa se a rotina de valida��o de CPF inválido está funcionando
 	 */
 	@Test
 	public void testeErroCpf() {
@@ -84,7 +84,7 @@ public class UnitTests extends TestCase {
 	}
 
 	/**
-	 * Testa se a rotina de validação de CNPJ inválido está funcionando
+	 * Testa se a rotina de valida��o de CNPJ inválido está funcionando
 	 */
 	@Test
 	public void testeErroCnpj() {
@@ -102,7 +102,7 @@ public class UnitTests extends TestCase {
 	}
 
 	/**
-	 * Testa se a rotina de validação de CNPJ está funcionando
+	 * Testa se a rotina de valida��o de CNPJ está funcionando
 	 */
 	@Test
 	public void testeValidaCnpj() {

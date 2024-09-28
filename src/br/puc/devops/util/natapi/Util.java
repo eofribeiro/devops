@@ -328,7 +328,7 @@ public final class Util {
 	}
 
 	/**
-	 * Remove caracteres especiais e substitui caracteres acentuados por caracteres não acentuados IMPORTANTE: a alteração da implementação desse método requer a alteração do método de mesmo nome no arquivo javascript util.js
+	 * Remove caracteres especiais e substitui caracteres acentuados por caracteres n�o acentuados IMPORTANTE: a altera��o da implementa��o desse m�todo requer a altera��o do m�todo de mesmo nome no arquivo javascript util.js
 	 * 
 	 * @param texto
 	 * @return
@@ -356,7 +356,7 @@ public final class Util {
 	}
 
 	/**
-	 * Remove caracteres especiais e substitui caracteres acentuados por caracteres não acentuados IMPORTANTE: a alteração da implementação desse método requer a alteração do método de mesmo nome no arquivo javascript util.js
+	 * Remove caracteres especiais e substitui caracteres acentuados por caracteres n�o acentuados IMPORTANTE: a altera��o da implementa��o desse m�todo requer a altera��o do m�todo de mesmo nome no arquivo javascript util.js
 	 * 
 	 * @param texto
 	 * @return
@@ -395,17 +395,6 @@ public final class Util {
 			: "";
 	}
 
-	// public static boolean foneticaSemelhante(String a, String b) {
-	// return Soundex.gerarValor(a).equals(Soundex.gerarValor(b));
-	// }
-
-//	public static void gerarMensagemJson(HttpServletResponse response, String mensagem, boolean success) {
-//		try {
-//			response.setContentType("application/json");
-//			response.getWriter().write(gerarMensagemJson(mensagem, success));
-//		} catch (IOException e1) {
-//		}
-//	}
 
 	public static String gerarMensagemJson(String mensagem, boolean success) {
 		StringBuilder sb = new StringBuilder();
@@ -416,20 +405,6 @@ public final class Util {
 		return sb.toString();
 	}
 
-//	public static void gerarRetornoJson(HttpServletResponse response, String mensagem, String obj, boolean success) {
-//		try {
-//			StringBuilder sb = new StringBuilder();
-//			sb.append("{");
-//			sb.append("\"success\":").append(success).append(",");
-//			sb.append("\"msg\":\"").append(mensagem).append("\",");
-//			sb.append("\"obj\":").append(obj);
-//			sb.append("}");
-//
-//			response.setContentType("application/json");
-//			response.getWriter().write(sb.toString());
-//		} catch (IOException e1) {
-//		}
-//	}
 
 	public static String formatarTelefone(String numFone) {
 		if (numFone.length() > 8)
@@ -441,66 +416,6 @@ public final class Util {
 	public static String formatarTelefone(Long numFone) {
 		return formatarTelefone(numFone.toString());
 	}
-
-//	public static void writerResponse(HttpServletResponse response, String content) throws ServletException, IOException {
-//		response.setContentType("application/json");
-//		response.getWriter().write(content);
-//	}
-
-	// /**
-	// * Verifica se o ambiente é de produção.<br>
-	// * @author marcio.correa
-	// * @since 16/12/2015
-	// * @return TRUE: produção | FALSE: homologação
-	// * @throws IOException
-	// */
-	// public static boolean isAmbienteProducao() throws IOException {
-	// if (Constante.AMBIENTE_PRODUCAO) {
-	// return true;
-	// } else {
-	// return false;
-	// }
-	// }
-
-	// /**
-	// * Verifica qual escopo está a aplicação para validação no OAUth2
-	// * referente ao serviço Minutrade.<br>
-	// * <br>
-	// * @author marcio.correa
-	// * @since 16/10/2015
-	// * @return String[] : scope
-	// * @throws IOException
-	// */
-	// public static String[] getScope() throws IOException {
-	// if (isAmbienteProducao()) {
-	// return new String[] { "nfpr:creditos" };
-	// } else {
-	// return new String[] { "h:nfpr:creditos" };
-	// }
-	// }
-
-	// /**
-	// * Verifica o ambiente e retorna a configuração correta para o RPRPlugin.<br>
-	// * <br>
-	// * @author marcio.correa
-	// * @since 16/12/2015
-	// * @return RPRPluginConfig
-	// * @throws IOException
-	// */
-	// public static RPRPluginConfig getRPRPluginConfig() throws IOException {
-	// return new RPRPluginConfig("jrprcli.properties");
-	// }
-
-	
-//	/**
-//	 * Define o objeto do usuario logado na sessao
-//	 * 
-//	 * @author lgmcjr@celepar.pr.gov.br
-//	 * @since 29/12/2020
-//	 */
-//	public static void setInfoUsuarioLogado(HttpServletRequest request, UserInfoDTO userInfoDTO) {
-//		request.getSession().setAttribute(OAuth2AuthenticationFilter.SESSION_ATTRIBUTE_USER_INFO, userInfoDTO);
-//	}
 
 	/**
 	 * Retorna um numero com formatacao Monetaria com o simbolo da moeda, inserindo sinal negativo quando menor que zero.
@@ -613,8 +528,8 @@ public final class Util {
 	public static Double parseValorMonetario(String valor) {
 		if (StringUtils.isNotBlank(valor)) {
 			return Double.valueOf(valor.replaceAll("\\.", "") // Retira todos os pontos(.)
-					.replaceAll(",", ".") // Troca vírgula por ponto(.)
-					.replaceAll("[^\\d\\.]", "")); // Retira tudo que não seja dígito e ponto(.));
+					.replaceAll(",", ".") // Troca v�rgula por ponto(.)
+					.replaceAll("[^\\d\\.]", "")); // Retira tudo que n�o seja d�gito e ponto(.));
 		}
 
 		return Double.valueOf("0");
@@ -791,7 +706,7 @@ public final class Util {
 	}
 	
 	/**
-	 * <p>Checar se o Número do Processo é válido</p>
+	 * <p>Checar se o Número do Processo � válido</p>
 	 * 
 	 * @author avpferreira@celepar.pr.gov.br
 	 * @since 23/09/2020
@@ -820,7 +735,7 @@ public final class Util {
 	}
 	
 	/**
-	 * <p>Checar se Número do Processo é inválido</p>
+	 * <p>Checar se Número do Processo � inválido</p>
 	 * 	
 	 * @author avpferreira@celepar.pr.gov.br
 	 * @since 23/09/2020
@@ -830,7 +745,7 @@ public final class Util {
 	}
 	
 	/**
-	 * <p>Checar se Número é null ou 0</p>
+	 * <p>Checar se Número � null ou 0</p>
 	 * 
 	 * @author avpferreira@celepar.pr.gov.br
 	 * @since 23/09/2020
@@ -840,7 +755,7 @@ public final class Util {
 	}	
 	
 	/**
-	 * <p>Checar se Número é diferente de null ou 0</p>
+	 * <p>Checar se Número � diferente de null ou 0</p>
 	 * 	
 	 * @author avpferreira@celepar.pr.gov.br
 	 * @since 23/09/2020
@@ -1088,7 +1003,7 @@ public final class Util {
     }
 	
 	/**
-	 * Verifica se a string só contém numeros de 1 a 9
+	 * Verifica se a string só cont�m numeros de 1 a 9
 	 * @param valor
 	 * @return
 	 */
