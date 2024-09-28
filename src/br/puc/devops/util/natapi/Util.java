@@ -327,12 +327,6 @@ public final class Util {
 		return String.valueOf((resto == 0 || resto == 1) ? 0 : (11 - resto)).equals(dv);
 	}
 
-	/**
-	 * Remove caracteres especiais e substitui caracteres acentuados por caracteres não acentuados IMPORTANTE: a alteração da implementação desse método requer a alteração do método de mesmo nome no arquivo javascript util.js
-	 * 
-	 * @param texto
-	 * @return
-	 */
 	public static String replaceSpecialChars(String texto) {
 		String retorno = texto;
 		retorno = retorno.replaceAll("[\\xE0-\\xE6]", "a");
@@ -355,12 +349,6 @@ public final class Util {
 		return retorno;
 	}
 
-	/**
-	 * Remove caracteres especiais e substitui caracteres acentuados por caracteres não acentuados IMPORTANTE: a alteração da implementação desse método requer a alteração do método de mesmo nome no arquivo javascript util.js
-	 * 
-	 * @param texto
-	 * @return
-	 */
 	public static String substituirCaracterAcentuado(String texto) {
 		String retorno = texto;
 		retorno = retorno.replaceAll("[\\xE0-\\xE6]", "a");
