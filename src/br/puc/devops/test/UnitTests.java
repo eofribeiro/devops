@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 public class UnitTests extends TestCase {
 
 	/**
-	 * Testa se o aplicativo de escola estÃ¡ funcionando
+	 * Testa se o aplicativo de escola esta funcionando
 	 */
 	@Test
 	public void testeEscola() {
@@ -28,7 +28,7 @@ public class UnitTests extends TestCase {
 	}
 
 	/**
-	 * Testa se o aplicativo de Petstore estÃ¡ funcionando
+	 * Testa se o aplicativo de Petstore esta funcionando
 	 */
 	@Test
 	public void testePetstore() {
@@ -46,7 +46,7 @@ public class UnitTests extends TestCase {
 	}
 
 	/**
-	 * Testa se a rotina de validação de CPF estÃ¡ funcionando
+	 * Testa se a rotina de validacao de CPF esta funcionando
 	 */
 
 	@Test
@@ -66,7 +66,7 @@ public class UnitTests extends TestCase {
 	}
 
 	/**
-	 * Testa se a rotina de validação de CPF invÃ¡lido estÃ¡ funcionando
+	 * Testa se a rotina de validacao de CPF invalido esta funcionando
 	 */
 	@Test
 	public void testeErroCpf() {
@@ -84,7 +84,7 @@ public class UnitTests extends TestCase {
 	}
 
 	/**
-	 * Testa se a rotina de validação de CNPJ invÃ¡lido estÃ¡ funcionando
+	 * Testa se a rotina de validacao de CNPJ invalido esta funcionando
 	 */
 	@Test
 	public void testeErroCnpj() {
@@ -102,7 +102,7 @@ public class UnitTests extends TestCase {
 	}
 
 	/**
-	 * Testa se a rotina de validação de CNPJ estÃ¡ funcionando
+	 * Testa se a rotina de validacao de CNPJ esta funcionando
 	 */
 	@Test
 	public void testeValidaCnpj() {
