@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="Projeto - Escola - DevOps" default="jar" basedir=".">
+	
+	<!-- configuracoes gerais -->
+	<property name="name"                           value="escola"/>
+    <property name="version"                        value="1.10-jdk11"/>
+	<property name="jarfile"                        value="${name}-${version}.jar"/>
+	
+	<!-- bibliotecas -->
+	<property name="lib.dir"                        value="${basedir}/lib"/>
+	<property name="bkp.dir"                        value="${basedir}/bkp"/>
+	
+	<!-- diretorios para construcao -->   
+	<property name="build.dir"                      value="${basedir}/bin"/>
+	<property name="projlib.dir"                    value="context/WEB-INF/lib"/>
+	
+	<!-- =================================================================== -->
+	<!-- Cria arquivo .jar para distribuicao de biblioteca em aplicativos    -->
+	<!-- =================================================================== -->
+	<target name="jar" description="Gera arquivo para distribuicao da biblioteca">
+		<echo message="Gerando biblioteca ${jarfile}..."/>
+		<move todir="${bkp.dir}">
+			<fileset dir="${basedir}">
+			    <include name="${name}*.jar"/>
+			</fileset>
+		</move>
+		<jar jarfile="${jarfile}" basedir="${build.dir}" includes="br/puc/devops/escola/**"/>
+	</target>
+	
+</project>
