@@ -2,10 +2,11 @@ package br.puc.devops.escola;
 
 public class EnsinoFundamental extends Estudante {
 
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 3108441687995880347L;
+	private static final long serialVersionUID = -5499368834431553970L;
 
 	public EnsinoFundamental(int matricula, String nome, int idade, String responsavel) {
 		super(matricula, nome, idade, responsavel);
