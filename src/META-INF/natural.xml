@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<natural-defs>	
+
+<!-- 
+Para o ambiente de  Producao:
+- portas 30102, 30104, 31103, 31105, 31110 e 38080 (porta compartilhada para efeito de distribuição de carga) - são as novas portas usando o JVM no processador zIIP para consumir menos CPU, como é uma versão mais nova e portanto mais restritiva, a URL deve estar no formato encoded, 
+ -->
+ 
+	<aplicacao nome="FIH">
+		<opcoes>
+			<!-- produção -->
+<!--  			<chave>000998</chave>
+			<senha>WEBSEFA</senha>
+			<ambiente>P</ambiente>
+			<host>10.15.60.20</host>
+			<porta>104</porta>  -->
+
+
+			<!-- DESENV -->
+			<chave>000999</chave>
+			<senha>WEBSEFA</senha>
+			<ambiente>D</ambiente>
+			<host>10.99.60.99</host>
+<!-- 			<porta>1102</porta> -->
+			<porta>30199</porta>
+
+		</opcoes>
+
+		<default>
+			<usuario>N000FIH</usuario>
+			<middleware>dbcon</middleware>
+		</default>		
+		<programa nome="FIH9NERR" descricao="Verifica situação interna do mainframe" />
+	</aplicacao>
+		
+
+</natural-defs>

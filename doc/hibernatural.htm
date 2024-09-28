@@ -1,0 +1,1063 @@
+<?xml version="1.0"
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>HiberNatural</title>
+<meta name="generator" content="http://txt2tags.sf.net" />
+</head>
+<body bgcolor="white" text="black">
+<div align="center">
+<h1>HiberNatural</h1>
+<h3>Hibernate for Natural - GTI/CELEPAR</h3>
+</div>
+
+<p></p>
+<hr class="light" />
+<p></p>
+    <ul>
+    <li><a href="#toc1">O que é isso?!</a>
+    </li>
+    <li><a href="#toc2">Arquitetura</a>
+    </li>
+    <li><a href="#toc3">Exemplo de Código</a>
+      <ul>
+      <li><a href="#toc4">NatAPI Pura</a>
+      </li>
+      <li><a href="#toc5">HiberNatural</a>
+      </li>
+      </ul>
+    </li>
+    <li><a href="#toc6">Instalação</a>
+    </li>
+    <li><a href="#toc7">Mapeamento</a>
+      <ul>
+      <li><a href="#toc8">Validação</a>
+      </li>
+      <li><a href="#toc9">Exemplo 1: DETRAN / Habilitação</a>
+      </li>
+      <li><a href="#toc10">Exemplo 2: DETRAN / Veículos</a>
+      </li>
+      <li><a href="#toc11">Exemplo 3: SEFA / IVA (IPVA)</a>
+      </li>
+      </ul>
+    </li>
+    <li><a href="#toc12">Depuração</a>
+      <ul>
+      <li><a href="#toc13">Nível INFO</a>
+      </li>
+      <li><a href="#toc14">Nível DEBUG</a>
+      </li>
+      </ul>
+    </li>
+    <li><a href="#toc15">Integração com o Framework</a>
+      <ul>
+      <li><a href="#toc16">Arquivo de Recursos</a>
+      </li>
+      </ul>
+    </li>
+    <li><a href="#toc17">CHANGELOG</a>
+      <ul>
+      <li><a href="#toc18">Versão 2.6</a>
+      </li>
+      <li><a href="#toc19">Versão 2.5</a>
+      </li>
+      <li><a href="#toc20">Versão 2.4</a>
+      </li>
+      <li><a href="#toc21">Versão 2.3</a>
+      </li>
+      <li><a href="#toc22">Versão 2.1</a>
+      </li>
+      <li><a href="#toc23">Versão 1.5</a>
+      </li>
+      </ul>
+    </li>
+    <li><a href="#toc24">TODO LIST</a>
+      <ul>
+      <li><a href="#toc25">Melhorias</a>
+      </li>
+      </ul>
+    </li>
+    </ul>
+
+<p></p>
+<hr class="light" />
+<p></p>
+<a id="toc1" name="toc1"></a>
+<h2>O que é isso?!</h2>
+<p>
+<b>HiberNatural</b> é uma biblioteca em Java que faz o mapeamento "objeto-texto" de chamadas ao <b>Mainframe</b> via <b>NatAPI</b>. Pela sua funcionalidade e característica de camada, faz o papel do <b>Hibernate</b> para o <b>Natural</b>. Nesta perspectiva, a <b>NatAPI</b> seria o análogo ao <b>Driver JDBC</b>.
+</p>
+<p>
+Com ela, há maior transparência nos processos de acesso ao <b>Natural</b>, e o programador não precisa se preocupar com tratamento de <i>substrings</i>, aumentando a produtividade e reduzindo o risco de erros. Basta criar um objeto, executar um método e receber outro objeto!
+</p>
+<a id="toc2" name="toc2"></a>
+<h2>Arquitetura</h2>
+<p>
+<img align="middle" src="esquema-hn.png" border="0" alt=""/>
+</p>
+<ol>
+<li>objeto do tipo <b>DTO</b> é instanciado e tem suas propriedades atribuídas
+</li>
+<li>HiberNatural é executado
+  <ul>
+  <li>a partir do objeto DTO, cria-se a string de envio ao programa Natural
+  </li>
+  <li>chamada ao Mainframe através da NatAPI
+    <ul>
+    <li>leitura de RC (<i>return code</i>), MSG (mensagem de erro) e da saída (<i>data parameter</i>)
+    </li>
+    </ul>
+  </li>
+  <li>parse da string de retorno e criação do objeto de saída
+  </li>
+  </ul>
+</li>
+<li>objeto do tipo <b>POJO</b> é criado e retornado
+</li>
+</ol>
+
+<a id="toc3" name="toc3"></a>
+<h2>Exemplo de Código</h2>
+<a id="toc4" name="toc4"></a>
+<h3>NatAPI Pura</h3>
+<pre>
+  // manipulação da string de envio
+  String entrada = "";
+  //...
+  
+  // chamada ao mainframe via NatAPI
+  Natural nat = new Natural("PRG001", entrada);
+  
+  // verificar código de retorno
+  if (nat.getRC() == 0) {
+  	
+  	// interpretação da string de retorno
+  	String saida = nat.getDataParameter();
+  	
+  	// manipulação da string de retorno
+  	//...
+  	
+  	// criação de objetos e atribuição de valores
+  	//...
+  
+  // se houve erro...
+  } else {
+  
+  	// captura da mensagem de erro
+  	String msg = nat.getMsg();
+  	
+  	// tratamento de erro
+  	//...
+  }
+</pre>
+<p></p>
+<a id="toc5" name="toc5"></a>
+<h3>HiberNatural</h3>
+<pre>
+  // criação do objeto de envio (DTO)
+  SITVN041DTO dto = new SITVN041DTO();
+  dto.setPlaca("ASA0610");
+  dto.setNumProcesso(2006001300041015L);
+  
+  // chamada ao HiberNatural e criação do objeto de retorno (POJO)
+  NaturalSITVN041DAO dao = new NaturalSITVN041DAO();
+  SITVN041 pojo = (SITVN041) dao.executar(dto);
+</pre>
+<p></p>
+<a id="toc6" name="toc6"></a>
+<h2>Instalação</h2>
+<p>
+As seguintes bibliotecas (versão igual ou superior) são necessárias:
+</p>
+<ol>
+<li><b>Jasppion (NatAPI)</b>: jasppion-1.0.7.jar
+</li>
+<li><b>Log4j</b>: log4j-1.2.8.jar
+</li>
+<li><b>Commons HTTP Client</b>: commons-httpclient-2.0.jar
+</li>
+<li><b>Commons Languages</b>: commons-lang-1.0.1.jar
+</li>
+<li><b>Commons Logging</b>: commons-logging-1.0.4.jar
+</li>
+</ol>
+
+<p>
+Para realizar a instalação, basta:
+</p>
+<ul>
+<li>copiar os arquivos acima e a <b>hibernatural-&lt;versão&gt;.jar</b> para o diretório <i>lib</i> do aplicativo
+</li>
+<li>criar o arquivo de mapeamento <b>natapi.xml</b> no diretório <i>src</i>
+</li>
+<li>criar o arquivo de usuários e senhas <b>PRG.properties</b> (onde <i>PRG</i> é a sigla do aplicativo no Natural) no diretório <i>src</i>
+</li>
+<li>criar classe do tipo DAO, herdada da <b>BaseNaturalDAO</b>
+</li>
+</ul>
+
+<a id="toc7" name="toc7"></a>
+<h2>Mapeamento</h2>
+<p>
+Para a execução do <b>HiberNatural</b>, é preciso criar o arquivo <b>natapi.xml</b>, o qual deve ficar num diretório definido no <i>CLASSPATH</i> do aplicativo (geralmente <i>src</i>). Este <b>XML</b> obedece ao arquivo <b>DTD</b> <b>natapi.dtd</b>, incluído no arquivo <b>JAR</b>, que contém todas as regras para sua validação.
+</p>
+<p>
+Não pode existir mais de um <b>programa</b> com o mesmo nome, e cada um deles deve ter <b>entrada</b> e <b>saída</b>. Nestas últimas tags estarão contidos um ou mais atributos (<b>constantes</b>, <b>campos</b>, <b>listas</b> e <b>objetos</b>).
+</p>
+<p>
+Como a biblioteca é baseada em programação orientada a objetos, é um pré-requisito que as classes especificadas estejam criadas (e já compiladas) e pelo menos com as propriedades indicadas. Há também sensitividade de caixa no arquivo XML.
+</p>
+<a id="toc8" name="toc8"></a>
+<h3>Validação</h3>
+<p>
+Para verificar se o arquivo de configurações <b>"natapi.xml"</b> contém erros, faça o seguinte:
+</p>
+<ol>
+<li>inclua no "natapi.xml" a indicação da <b>DTD</b>, como no exemplo abaixo:
+<pre>
+  &lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+  
+  &lt;!DOCTYPE natapi-defs PUBLIC "natapi" "http://10.15.61.6/hibernatural/natapi-2.1.dtd"&gt;
+  
+  &lt;natapi-defs&gt;
+  	...
+  &lt;/natapi-defs&gt;
+</pre>
+<p></p>
+</li>
+<li>no <b>Eclipse</b>, abra o arquivo "natapi.xml", clique com o botão direito e selecione a opção <b>Validate</b>
+</li>
+</ol>
+
+<p>
+Abaixo seguem exemplos de mapeamentos já utilizados nos sistemas <b>DETRAN / Habilitação</b>, <b>DETRAN / Veículos</b> e <b>SEFA / IVA (IPVA)</b>.
+</p>
+<a id="toc9" name="toc9"></a>
+<h3>Exemplo 1: DETRAN / Habilitação</h3>
+<h4>DUTHN151 - Mapeamento</h4>
+<pre>
+  &lt;programa nome="DUTHN151"&gt;
+  	&lt;entrada tratamento="tamanho-fixo" extremos="&amp;#034;" classe="gov.pr.detran.habilitacao.dto.DutHN151DTO"&gt;
+  		&lt;campo nome="numProcesso" tipo="Long" tam="9" /&gt;
+  		&lt;campo nome="nomeCandidato" tipo="String" tam="44" /&gt;
+  		&lt;campo nome="dataNascimento" tipo="Date" tam="8" /&gt;
+  		&lt;campo nome="sexo" tipo="Integer" tam="1" /&gt;
+  		&lt;campo nome="nomeMae" tipo="String" tam="44" /&gt;
+  		&lt;campo nome="tipoDocto" tipo="String" tam="1" /&gt;
+  		&lt;campo nome="numDocto" tipo="String" tam="15" /&gt;
+  		&lt;campo nome="siglaDocto" tipo="String" tam="10" /&gt;
+  		&lt;campo nome="ufDocto" tipo="String" tam="2" /&gt;
+  		&lt;campo nome="cpf" tipo="Long" tam="11" /&gt;
+  		&lt;campo nome="codNaturalidade" tipo="Integer" tam="4" /&gt;
+  		&lt;campo nome="numPGU" tipo="Long" tam="9" /&gt;
+  		&lt;lista nome="motivos" classe="gov.pr.detran.habilitacao.dto.MotivoProcessoDTO" qtd="4"&gt;
+  			&lt;campo nome="codMotivo" tipo="Integer" tam="3" /&gt;
+  		&lt;/lista&gt;
+  		&lt;campo nome="codNacionalidade" tipo="Integer" tam="1" /&gt;
+  		&lt;campo nome="codCondicionalidade" tipo="Integer" tam="1" /&gt;
+  		&lt;campo nome="numGuia" tipo="Long" tam="12" /&gt;
+  		&lt;campo nome="situacao" tipo="String" tam="1" /&gt;
+  		&lt;campo nome="dataCadastro" tipo="Date" tam="8" /&gt;
+  		&lt;campo nome="dataValidade" tipo="Date" tam="8" /&gt;
+  		&lt;campo nome="valor" tipo="Double" tam="15" dec="2" /&gt;
+  		&lt;campo nome="indServicos" tipo="Integer" tam="2" /&gt;
+  		&lt;lista nome="servicos" classe="gov.pr.detran.habilitacao.dto.GuiaServicoDTO" qtd="10"&gt;
+  			&lt;campo nome="codServico" tipo="Integer" tam="5" /&gt;
+  			&lt;campo nome="valorServico" tipo="Double" tam="15" dec="4" /&gt;
+  			&lt;campo nome="qtdeServico" tipo="Integer" tam="2" /&gt;
+  		&lt;/lista&gt;
+  	&lt;/entrada&gt;
+  	&lt;saida tratamento="tamanho-fixo" classe="gov.pr.detran.habilitacao.pojo.DutHN151"&gt;
+  		&lt;campo nome="inicio" tipo="Integer" tam="5" /&gt;
+  		&lt;campo nome="codErro" tipo="Integer" tam="5" /&gt;
+  		&lt;campo nome="tipoErro" tipo="Integer" tam="1" /&gt;
+  		&lt;campo nome="indCondicionalidade" tipo="Short" tam="1" /&gt;
+  	&lt;/saida&gt;
+  &lt;/programa&gt;
+</pre>
+<p></p>
+<h4>DUTHN151 - Natural</h4>
+<pre>
+  01 PA-RC                          				(N004)
+  01 PA-MSG                         				(A060)
+  *
+  LOCAL
+  01 ENTRADA
+       02 RECL1                      				(N004) INIT &lt;440&gt; /* tam. esperado
+       02 RECL2                       				(N004)                  /* tam. recebido
+  *
+  01 PA-DADOS-IN                   			 (A440)
+  01 REDEFINE PA-DADOS-IN
+  *
+       02 PA-ASPA                     				(A001)
+  *
+       02 PA-NUMERO-PROCESSO            		(N009)
+       02 REDEFINE PA-NUMERO-PROCESSO
+            03 PA-NUMERO-PROCESSO-A        	(A009)
+  *
+       02 PA-NOME-CANDIDATO             		(A044)
+       02 PA-DATA-NASCIMENTO            		(N008)  /* AAAAMMDD
+       02 PA-SEXO                       			(N001)
+       02 PA-NOME-MAE                   			(A044)
+  *
+       02 PA-DOCUM-IDENTIDADE           		(A028)
+       02 REDEFINE PA-DOCUM-IDENTIDADE
+           03 PA-TIPO-DOC                 			(N001)
+           03 PA-NUM-IDENT                			(A015)
+           03 PA-ORGAO-EMISS              		(A010)
+           03 PA-UF-DOC                   			(A002)
+   *
+       02 PA-CPF                        				(N011)
+       02 PA-LOCAL-NASCIM               		(N004)  /* Cód Fiscal ou Cod. País
+       02 REDEFINE PA-LOCAL-NASCIM
+            03 PA-LOCAL-NASCIM-A           		(A004)
+   *
+       02 PA-PGU                        			(N009)  /* COM DV (Num Registro CNH)
+       02 REDEFINE PA-PGU
+             03 PA-PGU-SEM-DV             		(N008)
+   *
+       02 PA-MOTIVO-REQUER              		(N003/004) // MotivoProcesso
+       02 PA-NACIONALIDADE             		(N001)
+       02 PA-CONDICIONALIDADE           		(N001) // variável utilizada no UCS
+  *
+  * ----- DADOS GUIA
+  *
+       02 PA-NUM-GUIA-IN                			(N012) /* sem DV
+       02 PA-SITUACAO-IN           			(A001)
+       02 PA-DATA-CADASTRO-IN           		(N008)  /* AAAAMMDD ? dt. Emis. guia
+       02 REDEFINE PA-DATA-CADASTRO-IN
+            03 FILLER                      			(A002)
+            03 PA-DATA-CAD-N6-IN           		(N006)
+       02 PA-DATA-VALIDADE-IN           		(N008)  /* AAAAMMDD
+       02 PA-VALOR-IN                   			(N013,2) /* Valor em reais
+       02 PA-IND-SERVICOS-IN            		(N002)    /* Qtde. de serviços da guia
+       02 PA-SERVICOS-IN                    		(010)
+            03 PA-COD-SERVICO-IN               		(N005)
+            03 PA-VALOR-SERVICO-IN             	(N011,4) /* Valor original não convertido
+             para reais
+            03 PA-QTD-SERVICO-IN               		(N002) /* Número de vezes que o mesmo 
+                     serviço foi computado
+       02 PA-ASPA2                      			(A001)
+  *
+  01 SAIDA
+  *
+       02 RECL3                       				(N004) INIT &lt;007&gt; /* Tamanho devolvido
+       02 RECL4                       				(N004)   /* Tamanho efetivamente gravado
+  *
+  01 PA-DADOS-OUT
+       02 PA-CODIGO-ERRO-OUT          		(N005)
+       02 PA-TIPO-ERRO-OUT            			(N001)
+       02 PA-IND-CONDICIONALIDADE-OUT         (N001)   
+</pre>
+<p></p>
+<a id="toc10" name="toc10"></a>
+<h3>Exemplo 2: DETRAN / Veículos</h3>
+<h4>SITVN601 - Mapeamento</h4>
+<pre>
+  &lt;programa nome="SITVN601"&gt;
+  	&lt;entrada tratamento="tamanho-fixo" separador="," extremos="," classe="gov.pr.detran.veiculos.dto.SITVN601DTO"&gt;
+  		&lt;campo nome="tipoAcesso" tipo="Short" tam="2"/&gt;
+  		&lt;campo nome="placa" tipo="String" tam="7"/&gt;
+  		&lt;campo nome="chassi" tipo="String" tam="21"/&gt;
+  		&lt;campo nome="renavam" tipo="Long" tam="9"/&gt;
+  		&lt;campo nome="nomeProprietario" tipo="String" tam="60"/&gt;
+  		&lt;campo nome="numCicProprietario" tipo="Long" tam="14"/&gt;
+  		&lt;lista nome="funcoes" classe="gov.pr.detran.veiculos.pojo.FuncaoEspecial" qtd="10" separador=""&gt;
+  			&lt;campo nome="codFuncao" tipo="Integer" tam="3"/&gt;
+  		&lt;/lista&gt;
+  		&lt;campo nome="tipoDoctoProprietario" tipo="Byte" tam="1"/&gt;
+  		&lt;campo nome="orgaoExpedidorDoctoProprietario" tipo="String" tam="10"/&gt;
+  		&lt;campo nome="ufDoctoProprietario" tipo="String" tam="2"/&gt;
+  		&lt;campo nome="numDoctoProprietario" tipo="String" tam="15"/&gt;
+  		&lt;campo nome="numCnhProprietario" tipo="Long" tam="11"/&gt;
+  	&lt;/entrada&gt;
+  	&lt;saida tratamento="tamanho-fixo" classe="gov.pr.detran.veiculos.pojo.SITVN601Retorno"&gt;
+  		&lt;campo nome="qtde" tipo="Integer" tam="5"/&gt;
+  		&lt;!-- tamanho de cada registro: 933 --&gt;
+  		&lt;lista nome="registros" classe="gov.pr.detran.veiculos.pojo.SITVN601" qtd="$qtde"&gt;
+  			&lt;campo nome="codRetorno" tipo="Long" tam="5"/&gt;
+  			&lt;campo nome="codErro" tipo="Integer" tam="4"/&gt;
+  			&lt;campo nome="progErro" tipo="String" tam="8"/&gt;
+  			&lt;campo nome="linhaErro" tipo="Integer" tam="4"/&gt;
+  			&lt;campo nome="evento" tipo="Integer" tam="4"/&gt;
+  			&lt;campo nome="codTransacao" tipo="Integer" tam="3"/&gt;
+  			&lt;campo nome="seqTransacao" tipo="Integer" tam="4"/&gt;
+  			&lt;campo nome="retTransacao" tipo="Short" tam="2"/&gt;
+  			&lt;campo nome="msgErroTransacao" tipo="String" tam="25"/&gt;
+  			&lt;campo nome="tipoRegistro" tipo="Byte" tam="1"/&gt;
+  			&lt;!-- &lt;campo nome="resto" tipo="String" tam="873"/&gt; --&gt;
+  			&lt;!-- tamanho do cabeçalho: 60, restantes: 873 --&gt;
+  			&lt;redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R1" condicao="$tipoRegistro == 1"&gt;
+  				&lt;campo nome="placa" tipo="String" tam="7"/&gt;
+  				&lt;campo nome="renavam" tipo="Long" tam="9"/&gt;
+  				&lt;campo nome="tipoVeiculo" tipo="Short" tam="2"/&gt;
+  				&lt;campo nome="codMarcaModelo" tipo="Integer" tam="6"/&gt;
+  				&lt;campo nome="anoFabricacao" tipo="Integer" tam="4"/&gt;
+  				&lt;campo nome="codCor" tipo="Short" tam="2"/&gt;
+  				&lt;campo nome="dataAquisicao" tipo="Date" tam="8"/&gt;
+  				&lt;campo nome="codSituacaoVeiculo" tipo="Short" tam="2"/&gt;
+  				&lt;espaco tam="833"/&gt;
+  			&lt;/redefinicao&gt;
+  			&lt;redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R2" condicao="$tipoRegistro == 2"&gt;
+  				&lt;campo nome="placa" tipo="String" tam="7"/&gt;
+  				&lt;campo nome="renavam" tipo="Long" tam="9"/&gt;
+  				&lt;campo nome="codMunicipioEmplacamento" tipo="Integer" tam="4"/&gt;
+  				&lt;campo nome="chassi" tipo="String" tam="21"/&gt;
+  				&lt;campo nome="indChassiRegravado" tipo="Byte" tam="1"/&gt;
+  				&lt;campo nome="indLiberaChassi" tipo="Byte" tam="1"/&gt;
+  				&lt;campo nome="indLiberaTamanho" tipo="Byte" tam="1"/&gt;
+  				&lt;campo nome="codTipoVeiculo" tipo="Short" tam="2"/&gt;
+  				&lt;campo nome="codMarcaModelo" tipo="Long" tam="6"/&gt;
+  				&lt;espaco tam="821"/&gt;
+  			&lt;/redefinicao&gt;
+  			&lt;redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R3" condicao="$tipoRegistro == 3"&gt;
+  				&lt;campo nome="numProtocolo" tipo="Long" tam="16"/&gt;
+  				&lt;campo nome="codMotivoPrincipal" tipo="Short" tam="2"/&gt;
+  				&lt;lista nome="motivosCombinados" classe="gov.pr.detran.veiculos.pojo.MotivoCombinado" qtd="6" separador=""&gt;
+  					&lt;campo nome="codMotivoCombinado" tipo="Byte" tam="2"/&gt;
+  				&lt;/lista&gt;
+  				&lt;espaco tam="843"/&gt;
+  			&lt;/redefinicao&gt;
+  			&lt;redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R4" condicao="$tipoRegistro == 4"&gt;
+  				&lt;espaco tam="50"/&gt;
+  				&lt;campo nome="codMunicipioExpedidorOficio" tipo="Integer" tam="4"/&gt;
+  				&lt;campo nome="codMotivoBloqueio" tipo="Integer" tam="3"/&gt;
+  				&lt;campo nome="numProcessoLiberacao" tipo="Long" tam="16"/&gt;
+  				&lt;campo nome="orgaoExpedidorOficio" tipo="String" tam="240"/&gt;
+  				&lt;campo nome="codTipoBloqueio" tipo="Byte" tam="1"/&gt;
+  				&lt;campo nome="codSetorBloqueio" tipo="Byte" tam="2"/&gt;
+  				&lt;espaco tam="557"/&gt;
+  			&lt;/redefinicao&gt;
+  			&lt;redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R5" condicao="$tipoRegistro == 5"&gt;
+  				&lt;campo nome="tipoProcesso" tipo="Byte" tam="2"/&gt;
+  				&lt;campo nome="numProcessoApreensao" tipo="Long" tam="16"/&gt;
+  				&lt;campo nome="dthrProcessoApreensao" tipo="Date" tam="14" mascara="yyyyMMddHHmmss"/&gt;
+  				&lt;campo nome="codMotivoApreensao" tipo="Byte" tam="2"/&gt;
+  				&lt;campo nome="codPatio" tipo="Integer" tam="4"/&gt;
+  				&lt;campo nome="numRegistroPatio" tipo="Long" tam="9"/&gt;
+  				&lt;campo nome="placa" tipo="String" tam="7"/&gt;
+  				&lt;campo nome="renavam" tipo="Long" tam="9"/&gt;
+  				&lt;campo nome="chassi" tipo="String" tam="21"/&gt;
+  				&lt;campo nome="indRemarcacaoChassi" tipo="Byte" tam="1"/&gt;
+  				&lt;campo nome="codTipoVeiculo" tipo="Byte" tam="2"/&gt;
+  				&lt;campo nome="indChassiApreensao" tipo="Byte" tam="1"/&gt;
+  				&lt;campo nome="indBloqueioApreensao" tipo="Byte" tam="1"/&gt;
+  				&lt;campo nome="indRouboFurto" tipo="Byte" tam="1"/&gt;
+  				&lt;campo nome="utrProcessamento" tipo="Integer" tam="3"/&gt;
+  				&lt;espaco tam="780"/&gt;
+  			&lt;/redefinicao&gt;
+  			&lt;redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R6" condicao="$tipoRegistro == 6"&gt;
+  				&lt;campo nome="numMotor" tipo="String" tam="21"/&gt;
+  				&lt;campo nome="numCambio" tipo="String" tam="21"/&gt;
+  				&lt;campo nome="indLiberacaoParaChoqueEspecial" tipo="Byte" tam="1"/&gt;
+  				&lt;campo nome="indTurboCompressor" tipo="Byte" tam="1"/&gt;
+  				&lt;campo nome="indMunck" tipo="Byte" tam="1"/&gt;
+  				&lt;espaco tam="828"/&gt;
+  			&lt;/redefinicao&gt;
+  			&lt;redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R7" condicao="$tipoRegistro == 7"&gt;
+  				&lt;campo nome="anoCSV" tipo="String" tam="120"/&gt;
+  				&lt;campo nome="numCSV" tipo="String" tam="300"/&gt;
+  				&lt;espaco tam="453"/&gt;
+  			&lt;/redefinicao&gt;
+  		&lt;/lista&gt;
+  	&lt;/saida&gt;
+  &lt;/programa&gt;
+</pre>
+<p></p>
+<a id="toc11" name="toc11"></a>
+<h3>Exemplo 3: SEFA / IVA (IPVA)</h3>
+<h4>IVAFN05X - Mapeamento</h4>
+<pre>
+  &lt;programa nome="IVAFN05X"&gt;
+  	&lt;entrada tratamento="tamanho-fixo" classe="gov.pr.sefa.iva.dto.IVAFN05XDTO"&gt;
+  		&lt;campo nome="dataCalculo" 	tipo="Date" 	tam="8" mascara="yyyyMMdd"/&gt;
+  		&lt;campo nome="renavam"		tipo="Integer" 	tam="9"/&gt;
+  		&lt;campo nome="numeroTap"		tipo="Integer" 	tam="9"/&gt;
+  		&lt;campo nome="numeroParc"	tipo="Short" 	tam="2"/&gt;
+  		&lt;campo nome="anoBase"		tipo="Integer" 	tam="4"/&gt;
+  	&lt;/entrada&gt;
+  	&lt;saida tratamento="tamanho-fixo" classe="gov.pr.sefa.iva.pojo.IVAFN05X"&gt;
+  		&lt;campo nome="dataCalculo" 	tipo="Date" 	tam="8" mascara="yyyyMMdd"/&gt;
+  		&lt;campo nome="renavam"		tipo="Integer" 	tam="9"/&gt;
+  		&lt;campo nome="numeroTap"		tipo="Integer" 	tam="9"/&gt;
+  		&lt;campo nome="numeroParc"	tipo="Short" 	tam="2"/&gt;
+  		&lt;campo nome="anoBase"		tipo="Integer" 	tam="4"/&gt;
+  		&lt;lista nome="Parcela" classe="gov.pr.sefa.iva.pojo.Parcela" qtd="15"&gt;
+  			&lt;campo nome="dataVcto"			tipo="Date"		tam="8"	mascara="yyyyMMdd"/&gt;
+  			&lt;campo nome="vlrImpMul"			tipo="Double"	tam="9" dec="2" /&gt;
+  			&lt;campo nome="vlrCorMon" 		tipo="Double"	tam="9" dec="2" /&gt;
+  			&lt;campo nome="vlrJuros"			tipo="Double"	tam="9" dec="2" /&gt;
+  			&lt;campo nome="vlrJurosSaldo"		tipo="Double"	tam="9" dec="2" /&gt;
+  			&lt;campo nome="vlrJurosParc"		tipo="Double"	tam="9" dec="2" /&gt;
+  			&lt;campo nome="vlrCorMonR"		tipo="Double"	tam="9" dec="2" /&gt;
+  			&lt;campo nome="vlrJurosParcR"		tipo="Double"	tam="9" dec="2" /&gt;
+  			&lt;campo nome="vlrJurosSaldoDev"	tipo="Double"	tam="9" dec="2" /&gt;
+  			&lt;campo nome="taxaVincendo"		tipo="Double"	tam="7"	dec="4" /&gt;
+  			&lt;campo nome="taxaMora"			tipo="Double"	tam="7" dec="4" /&gt;
+  			&lt;campo nome="taxaResiduo"		tipo="Double"	tam="7"	dec="4" /&gt;
+  			&lt;campo nome="anoMesTaxa"		tipo="Integer"	tam="6" /&gt;
+  			&lt;campo nome="saldoPagto"		tipo="Double"	tam="9" dec="2" /&gt;
+  			&lt;campo nome="vlrPagto"			tipo="Double"	tam="9" dec="2" /&gt;
+  			&lt;campo nome="saldoPagtoD"		tipo="Double"	tam="9" dec="2"	/&gt;
+  			&lt;campo nome="dtPagto"			tipo="Date"		tam="8" mascara="yyyyMMdd"/&gt;
+  			&lt;campo nome="sitParc"			tipo="Byte"		tam="1"	/&gt;
+  			&lt;campo nome="indCorrecao"		tipo="Double"	tam="9" dec="4" /&gt;
+  			&lt;campo nome="temAntecipacao"	tipo="Byte"		tam="1" /&gt;
+  		&lt;/lista&gt;
+  	&lt;/saida&gt;
+  &lt;/programa&gt;
+</pre>
+<p></p>
+<a id="toc12" name="toc12"></a>
+<h2>Depuração</h2>
+<p>
+As classes que compõem o Hibernatural fazem uso da biblioteca <b>Log4j</b> para geração de LOGs. Um <i>appender</i> chamado <b>"gov.pr.celepar.util.natapi"</b> é instanciado internamente, de modo que o arquivo <b>log4j.properties</b> pode ser configurado também para chamadas ao Mainframe. Veja exemplo:
+</p>
+<pre>
+  log4j.rootLogger=DEBUG, stdout
+  log4j.logger.gov.pr.celepar.util.natapi=DEBUG, arquivo
+  
+  # exibição no console
+  log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+  log4j.appender.stdout.Target=System.out
+  log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+  log4j.appender.stdout.layout.ConversionPattern=%m%n
+  #log4j.appender.stdout.Threshold=INFO
+  log4j.appender.stdout.Threshold=DEBUG
+  
+  # inclusão de linhas no arquivo
+  log4j.appender.arquivo=org.apache.log4j.RollingFileAppender
+  log4j.appender.arquivo.File=/tmp/natapi.log
+  log4j.appender.arquivo.MaxFileSize=500KB
+  log4j.appender.arquivo.MaxBackupIndex=3
+  log4j.appender.arquivo.layout=org.apache.log4j.PatternLayout
+  log4j.appender.arquivo.layout.ConversionPattern=%m%n
+  log4j.appender.arquivo.Threshold=DEBUG
+</pre>
+<p></p>
+<p>
+Desta forma, a depuração pode torna-se mais produtiva, por exemplo, através da instrução:
+</p>
+<pre>
+  $ tail -f natapi.log
+</pre>
+<p></p>
+<a id="toc13" name="toc13"></a>
+<h3>Nível INFO</h3>
+<p>
+São exibidos, no nível <b>INFO</b>:
+</p>
+<ul>
+<li>nome do programa
+</li>
+<li>string de envio
+</li>
+<li>RC (<i>return code</i>)
+</li>
+<li>mensagem de erro
+</li>
+<li>string de retorno
+</li>
+</ul>
+
+<p>
+Exemplo:
+</p>
+<pre>
+  --------------------------------------------------------------------------------
+  Chamada API Natural: DUTHN804
+  &gt; entrada: ""000000138123218737870E20051014200510140000000000254230200001000000001752300020000200000
+  0005415000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000""
+  &gt; rc: 0, mensagem: ""
+  &gt; saída: "00001053021"
+  --------------------------------------------------------------------------------
+</pre>
+<p></p>
+<a id="toc14" name="toc14"></a>
+<h3>Nível DEBUG</h3>
+<p>
+Já no nível <b>DEBUG</b> são mostrados:
+</p>
+<ul>
+<li>objeto de entrada (DTO) e seus atributos, recursivamente
+</li>
+<li>informações do nível <b>INFO</b>
+</li>
+<li>objeto de saída (POJO) e seus atributos, recursivamente
+</li>
+</ul>
+
+<p>
+Exemplos:
+</p>
+<pre>
+  Lendo configuração do programa Natural DUTHN178...
+  
+  ********************************************************************************
+  Criando string para envio ao Natural...
+  + gov.pr.detran.habilitacao.dto.DutHN178DTO@b86944
+  - tipoPGU: "2"
+  - numPGU: "58735234"
+  - tipoDocto: "null"
+  - numDocto: "null"
+  - siglaDocto: "null"
+  - ufDocto: "null"
+  - nomeCandidato: "null"
+  - nomeMae: "null"
+  - dataNascimento: "null"
+  - numProcesso: "75238745"
+  --------------------------------------------------------------------------------
+  Chamada API Natural: DUTHN178
+  &gt; entrada: ""20587352340                                                                            
+                                         00000000075238745""
+  &gt; rc: 0, mensagem: ""
+  &gt; saída: "00001050031"
+  --------------------------------------------------------------------------------
+  Processando linha recebida do Natural...
+  + gov.pr.detran.habilitacao.pojo.DutHN178@1642bd6
+  - inicio: "1"
+  - codErro: "5003"
+  - tipoErro: "1"
+  ********************************************************************************
+  
+  Lendo configuração do programa Natural SITVN601...
+  
+  ********************************************************************************
+  Criando string para envio ao Natural...
+  + gov.pr.detran.veiculos.dto.SITVN601DTO@c3e9e9
+  - tipoAcesso: "1"
+  - placa: "BCC6019"
+  - chassi: "null"
+  - renavam: "null"
+  - nomeProprietario: "null"
+  - numCicProprietario: "null"
+  + funcoes[0]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@31f2a7
+    - codFuncao: "18"
+  + funcoes[1]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@131c89c
+    - codFuncao: "20"
+  + funcoes[2]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@1697b67
+    - codFuncao: "null"
+  + funcoes[3]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@24c4a3
+    - codFuncao: "null"
+  + funcoes[4]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@1e9c82e
+    - codFuncao: "null"
+  + funcoes[5]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@1554d32
+    - codFuncao: "null"
+  + funcoes[6]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@13f136e
+    - codFuncao: "null"
+  + funcoes[7]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@14a18d
+    - codFuncao: "null"
+  + funcoes[8]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@7a4489
+    - codFuncao: "null"
+  + funcoes[9]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@129b0e1
+    - codFuncao: "null"
+  - tipoDoctoProprietario: "null"
+  - orgaoExpedidorDoctoProprietario: "null"
+  - ufDoctoProprietario: "null"
+  - numDoctoProprietario: "null"
+  - numCnhProprietario: "null"
+  --------------------------------------------------------------------------------
+  Chamada API Natural: SITVN601
+  &gt; entrada: ",01,BCC6019,                     ,000000000,                                            
+                  ,00000000000000,018020000000000000000000000000,0,          ,  ,               ,00000
+  000000,"
+  &gt; rc: 0, mensagem: ""
+  &gt; saída: "00006000000000SITVN60100000000000000000                         2BCC60195134555907535BS361
+  915             200061179041020197319731005000000052000001009000000000000000000000000000000000000000
+  00000020040120042004111200000010100036581240915042140660      MARIA FRANCISCA DE JESUS ALVES        
+                        00200410301SESP      PR0033001177086001970R VATER LOPES             00242CASA 
+       CJ RES HORIZONTE    7535100004373358958699271810      LUCIANA HELENA FERREIRA                  
+                     001SESP      PR00000000000000000                       000000000000000           
+           00000000000000000000000000        000000000000000000000004799462347667A01                  
+                                            00000000000000000000000                          00000    
+                            000000000000                                            200411181112560110
+                                 00000000000000000000000000SITVN60100000000000000000                  
+         6                                          000                                               
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                   000000000SITVN60100
+  000000000000000                         32004072305670090020000000000000000 0000 0000 0000 0000 0000
+   0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
+   0000 0000 0000 0000 580440186A20041118111256  000000000000000000000000                             
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                000000000SITVN60100000000000000000                         7                          
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                 000000000SITVN60100000000000000000                   
+        4                                                  00000000000000000000000                    
+                                                                                                      
+                                                                                                      
+                      000                                                                             
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                  000000000SITVN601000
+  00000000000000                         554200501730041621720050930144621010004000031138BCC6019513455
+  590BS361915             206100017                                                                   
+                                                                        0000                          
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+                                                                                                      
+               "
+  --------------------------------------------------------------------------------
+  Processando linha recebida do Natural...
+  + gov.pr.detran.veiculos.pojo.SITVN601Retorno@132ae7
+  - qtde: "6"
+  + registros[0]: gov.pr.detran.veiculos.pojo.SITVN601@65b738
+    - codRetorno: "0"
+    - codErro: "0"
+    - progErro: "SITVN601"
+    - linhaErro: "0"
+    - evento: "0"
+    - codTransacao: "0"
+    - seqTransacao: "0"
+    - retTransacao: "0"
+    - msgErroTransacao: ""
+    - tipoRegistro: "2"
+    + redefinição ($tipoRegistro == 2): gov.pr.detran.veiculos.pojo.SITVN601R2@1dfd868
+      - placa: "BCC6019"
+      - renavam: "513455590"
+      - codMunicipioEmplacamento: "7535"
+      - chassi: "BS361915"
+      - indChassiRegravado: "2"
+      - indLiberaChassi: "0"
+      - indLiberaTamanho: "0"
+      - codTipoVeiculo: "6"
+      - codMarcaModelo: "117904"
+  + registros[1]: gov.pr.detran.veiculos.pojo.SITVN601@f894ce
+    - codRetorno: "0"
+    - codErro: "0"
+    - progErro: "SITVN601"
+    - linhaErro: "0"
+    - evento: "0"
+    - codTransacao: "0"
+    - seqTransacao: "0"
+    - retTransacao: "0"
+    - msgErroTransacao: ""
+    - tipoRegistro: "6"
+    + redefinição ($tipoRegistro == 6): gov.pr.detran.veiculos.pojo.SITVN601R6@45e228
+      - numMotor: ""
+      - numCambio: ""
+      - indLiberacaoParaChoqueEspecial: "0"
+      - indTurboCompressor: "0"
+      - indMunck: "0"
+  + registros[2]: gov.pr.detran.veiculos.pojo.SITVN601@2b249
+    - codRetorno: "0"
+    - codErro: "0"
+    - progErro: "SITVN601"
+    - linhaErro: "0"
+    - evento: "0"
+    - codTransacao: "0"
+    - seqTransacao: "0"
+    - retTransacao: "0"
+    - msgErroTransacao: ""
+    - tipoRegistro: "3"
+    + redefinição ($tipoRegistro == 3): gov.pr.detran.veiculos.pojo.SITVN601R3@106daba
+      - numProtocolo: "2004072305670090"
+      - codMotivoPrincipal: "2"
+      + motivosCombinados[0]: gov.pr.detran.veiculos.pojo.MotivoCombinado@1021f34
+        - codMotivoCombinado: "0"
+      + motivosCombinados[1]: gov.pr.detran.veiculos.pojo.MotivoCombinado@4eb043
+        - codMotivoCombinado: "0"
+      + motivosCombinados[2]: gov.pr.detran.veiculos.pojo.MotivoCombinado@163956
+        - codMotivoCombinado: "0"
+      + motivosCombinados[3]: gov.pr.detran.veiculos.pojo.MotivoCombinado@10e434d
+        - codMotivoCombinado: "0"
+      + motivosCombinados[4]: gov.pr.detran.veiculos.pojo.MotivoCombinado@16477d9
+        - codMotivoCombinado: "0"
+      + motivosCombinados[5]: gov.pr.detran.veiculos.pojo.MotivoCombinado@f864fe
+        - codMotivoCombinado: "0"
+  + registros[3]: gov.pr.detran.veiculos.pojo.SITVN601@1ae9aaa
+    - codRetorno: "0"
+    - codErro: "0"
+    - progErro: "SITVN601"
+    - linhaErro: "0"
+    - evento: "0"
+    - codTransacao: "0"
+    - seqTransacao: "0"
+    - retTransacao: "0"
+    - msgErroTransacao: ""
+    - tipoRegistro: "7"
+    + redefinição ($tipoRegistro == 7): gov.pr.detran.veiculos.pojo.SITVN601R7@33788d
+      - anoCSV: ""
+      - numCSV: ""
+  + registros[4]: gov.pr.detran.veiculos.pojo.SITVN601@12fb0af
+    - codRetorno: "0"
+    - codErro: "0"
+    - progErro: "SITVN601"
+    - linhaErro: "0"
+    - evento: "0"
+    - codTransacao: "0"
+    - seqTransacao: "0"
+    - retTransacao: "0"
+    - msgErroTransacao: ""
+    - tipoRegistro: "4"
+    + redefinição ($tipoRegistro == 4): gov.pr.detran.veiculos.pojo.SITVN601R4@1f8bd0d
+      - codMunicipioExpedidorOficio: "0"
+      - codMotivoBloqueio: "0"
+      - numProcessoLiberacao: "0"
+      - orgaoExpedidorOficio: ""
+      - codTipoBloqueio: "0"
+      - codSetorBloqueio: "0"
+  + registros[5]: gov.pr.detran.veiculos.pojo.SITVN601@143bf3d
+    - codRetorno: "0"
+    - codErro: "0"
+    - progErro: "SITVN601"
+    - linhaErro: "0"
+    - evento: "0"
+    - codTransacao: "0"
+    - seqTransacao: "0"
+    - retTransacao: "0"
+    - msgErroTransacao: ""
+    - tipoRegistro: "5"
+    + redefinição ($tipoRegistro == 5): gov.pr.detran.veiculos.pojo.SITVN601R5@c06258
+      - tipoProcesso: "54"
+      - numProcessoApreensao: "2005017300416217"
+      - dthrProcessoApreensao: "30/09/2005 14:46:21"
+      - codMotivoApreensao: "1"
+      - codPatio: "4"
+      - numRegistroPatio: "31138"
+      - placa: "BCC6019"
+      - renavam: "513455590"
+      - chassi: "BS361915"
+      - indRemarcacaoChassi: "2"
+      - codTipoVeiculo: "6"
+      - indChassiApreensao: "1"
+      - indBloqueioApreensao: "0"
+      - indRouboFurto: "0"
+      - utrProcessamento: "17"
+  ********************************************************************************
+  
+</pre>
+<p></p>
+<a id="toc15" name="toc15"></a>
+<h2>Integração com o Framework</h2>
+<a id="toc16" name="toc16"></a>
+<h3>Arquivo de Recursos</h3>
+<pre>
+  **ApplicationResources.properties**:
+  mensagem.padrao=Sistema temporariamente indisponível. Aguarde alguns instantes e tente novamente.
+  mensagem.natapi=Não foi possível executar serviço da API Natural.
+  mensagem.natapi.bne=Não foi possível executar serviço da API Natural. Programa: {0} - RC: {1}: {2}
+  2010=CÓDIGO DO RENAVAM INVÁLIDO.
+  2011=GUIA NÃO APROPRIADA!
+  2027=GUIA APROPRIADA COM SUCESSO.
+</pre>
+<p></p>
+<a id="toc17" name="toc17"></a>
+<h2>CHANGELOG</h2>
+<a id="toc18" name="toc18"></a>
+<h3>Versão 2.6</h3>
+<h4>Correção de bugs</h4>
+<p>
+Erro <i>NoSuchMethodException</i> era levantado quando diversas chamadas ao HiberNatural eram feitas de modo simultâneo. Isso foi corrigido com a implementação de um método <b>synchronized</b> numa abordagem do tipo <b>singleton</b>.
+</p>
+<h4>Melhorias na leitura das definições</h4>
+<p>
+Anteriormente, a cada chamada de programa, o arquivo de configurações (natapi.xml) era relido. O código que fazia a leitura das definições de entrada e saída para um programa foi modificado, de modo que a leitura é realizada uma única vez, na primeira chamada de qualquer programa.
+</p>
+<p>
+Com isso, as execuções via HiberNatural tendem a ser muito mais rápidas.
+</p>
+<a id="toc19" name="toc19"></a>
+<h3>Versão 2.5</h3>
+<h4>Melhorias no tratamento de exceções</h4>
+<p>
+Serão validados, ao instanciar a classe da HiberNatural:
+</p>
+<ul>
+<li>a existência do arquivo de propriedades <b>natapi.xml</b>
+</li>
+<li>a existência do programa especificado no arquivo
+</li>
+<li>a existência de parâmetros de entrada e saída para o programa
+</li>
+</ul>
+
+<a id="toc20" name="toc20"></a>
+<h3>Versão 2.4</h3>
+<h4>Correção de bugs</h4>
+<ul>
+<li>corrigido bug na criação de listas com separador
+</li>
+<li>datas inválidas vindas do Mainframe agora são desconsideradas (valor <i>null</i>)
+</li>
+</ul>
+
+<h4>Aviso sobre o tamanho de campos</h4>
+<p>
+Alteração para que a biblioteca passe a lançar uma exceção nos casos onde o valor passado para um campo seja de tamanho maior que o tamanho definido nas propriedades. Por exemplo, nesta definição de campo:
+</p>
+<pre>
+  &lt;campo nome="descrProcedencia" tipo="String" tam="3"/&gt;
+</pre>
+<p>
+Se no atributo <i>descrProcedencia</i> o tamanho da String for maior que 3, lançar uma exceção dizendo que há um problema no tamanho deste campo.
+</p>
+<p>
+Essa melhoria ajudará na identificação de problemas dessa natureza em programas com muitos parâmetros de entrada ou saída.
+</p>
+<a id="toc21" name="toc21"></a>
+<h3>Versão 2.3</h3>
+<h4>Classe de exceção</h4>
+<p>
+Foi criada a classe <i>BaseNaturalException</i>, que será lançada no lugar da <i>ApplicationException</i> quando houver erro da <b>NatAPI</b>, ou seja, RC (<i>return code</i>) diferente de zero.
+</p>
+<h4>Flexibilidade</h4>
+<p>
+Agora o <b>HiberNatural</b> não depende mais da biblioteca <b>framework.jar</b>. As exeções lançadas serão exclusivamente do tipo <i>Exception</i>, e não mais <i>ApplicationException</i>. Com isso, o <b>HiberNatural</b> torna-se mais flexível, podendo ser utilizado em projetos sem o padrão <i>Framework</i>.
+</p>
+<h4>Novos tipos</h4>
+<p>
+Foi adicionado suporte aos seguintes tipos de dados:
+</p>
+<ul>
+<li><b>Float</b>: apesar de ter a metade da capacidade do <i>Double</i>, não gera erros de arredondamento em certos casos
+</li>
+<li><b>BigDecimal</b>: numérico com grande capacidade de armazenamento, comum em classes geradas pelo <i>Middlegen</i> para o <i>Hibernate</i>
+</li>
+</ul>
+
+<p>
+Para o tipo <b>BigDecimal</b>, foi utilizado o construtor por <i>String</i>, devido à imprecisão apresentada com o tipo <i>double</i>.
+</p>
+<h4>Melhoria na depuração</h4>
+<p>
+Exibição de maneira mais explícita, na saída de erro, tentativas sem sucesso de criação de classes (<i>ClassNotFoundException</i>).
+</p>
+<a id="toc22" name="toc22"></a>
+<h3>Versão 2.1</h3>
+<h4>Constantes</h4>
+<p>
+Esta funcionalidade faz com que trechos da string de retorno sejam automaticamente ignorados e dispensa a criação de propriedades "fixas" em objetos DTO para a string de envio.
+</p>
+<ul>
+<li><b>&lt;aspas/&gt;</b>: representa "
+</li>
+<li><b>&lt;virgula/&gt;</b>: representa ,
+</li>
+<li><b>&lt;espaco tam="5"/&gt;</b>: representa uma cadeia de espaços do tamanho especificado
+</li>
+<li><b>&lt;fixo valor="XXX"/&gt;</b>: inclui a constante especificada
+</li>
+</ul>
+
+<h4>Tag Objeto</h4>
+<p>
+Com isso, não será necessário usar mais a tag <b>&lt;lista&gt;</b> contendo apenas 1 item (<i>qtd="1"</i>). Um objeto inteiro pode ser lido (para a entrada) ou criado (para a saída). Exemplo:
+</p>
+<pre>
+  &lt;objeto nome="sitvn200R1" classe="gov.pr.detran.veiculos.pojo.SITVN200R1"&gt;
+  	&lt;campo nome="tipoRegistro" tipo="Byte" tam="1"/&gt;
+</pre>
+<p></p>
+<h4>Conceito de contêiner</h4>
+<p>
+As tags <b>&lt;lista&gt;</b> e <b>&lt;objeto&gt;</b> implementam esta interface, e por isso são capazes de armazenar outros atributos. Assim, podem ser feitas listas dentro de listas, por exemplo. Recursividade é possível! Exemplo:
+</p>
+<pre>
+  &lt;lista nome="registros" classe="gov.pr.detran.veiculos.pojo.SITVN601" qtd="$qtde"&gt;
+  	&lt;lista nome="motivosCombinados" classe="gov.pr.detran.veiculos.pojo.MotivoCombinado" qtd="6" separador=""&gt;
+  		&lt;campo nome="codMotivoCombinado" tipo="Byte" tam="2"/&gt;
+</pre>
+<p></p>
+<h4>Separador e Extremos</h4>
+<p>
+Em alguns casos, os programas <b>Natural</b> esperam a string de entrada com os campos separados por um determinado caracter. Anteriormente, era preciso criar campos fixos do tipo <i>String</i> entre os campos reais. Agora isso não será mais preciso, e os códigos ficarão muito mais enxutos e legíveis.
+Contêineres (Listas e Objetos) podem ter separadores diferenciados.
+Se a opção <i>extremos</i> for especificada, a string será limitada por estes caracteres, como aspas duplas ou vírgulas. Exemplos:
+</p>
+<pre>
+  &lt;entrada extremos="&amp;#034;" classe="gov.pr.detran.habilitacao.dto.DutHN151DTO"&gt;
+  &lt;entrada separador="," extremos="," classe="gov.pr.detran.veiculos.dto.SITVN601DTO"&gt;
+  	&lt;lista nome="funcoes" classe="gov.pr.detran.veiculos.pojo.FuncaoEspecial" qtd="10" separador=""&gt;
+</pre>
+<p></p>
+<h4>Listas de tamanho variável</h4>
+<p>
+Com esse recurso, o tratamento de <i>RecordSets</i> do <b>Natural</b> pode ser feito sem dificuldades! O caso dos primeiros 5 bytes que a <b>NatAPI</b> retorna ("00001" na maioria dos casos) torna-se um caso particular desta função. Para isso, a opção <i>qtd</i> da lista, que geralmente contém um número fixo, deve ser preenchida com uma expressão. Para utilizar campos da própria classe, emprega-se o sinal de cifrão, semelhantemente à linguagem PHP. Exemplo:
+</p>
+<pre>
+  &lt;campo nome="qtdRegistros" tipo="Integer" tam="5"/&gt;
+  &lt;lista nome="registros" qtd="$qtdRegistros"&gt;
+</pre>
+<p></p>
+<h4>Redefinição condicional</h4>
+<p>
+Com isso, a classe do objeto a ser criado e populado é definida em tempo de execução! Na expressão da condição, podem ser usados valores de campos já atribuídos na classe anterior, utilizando o sinal de cifrão.
+No exemplo abaixo, as classes <i>SITVN601R1</i> e <i>SITVN601R3</i> estendem a <i>SITVN601</i>, e a decisão sobre qual delas criar fica a critério da análise da expressão lógica. Existe ainda, através do <i>método de redefinição</i>, a opção de copiar atributos comuns da classe herdada, a fim de deixar o código mais limpo.
+</p>
+<pre>
+  &lt;lista nome="registros" classe="gov.pr.detran.veiculos.pojo.SITVN601" qtd="$qtde"&gt;
+  	&lt;campo nome="evento" tipo="Integer" tam="4"/&gt;
+  	&lt;campo nome="codTransacao" tipo="Integer" tam="3"/&gt;
+  	&lt;campo nome="tipoRegistro" tipo="Byte" tam="1"/&gt;
+  	&lt;redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R1" condicao="$tipoRegistro == 1"&gt;
+  		&lt;campo nome="placa" tipo="String" tam="7"/&gt;
+  		&lt;campo nome="renavam" tipo="Long" tam="9"/&gt;
+  		&lt;campo nome="tipoVeiculo" tipo="Short" tam="2"/&gt;
+  	&lt;/redefinicao&gt;
+  	&lt;redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R3" condicao="$tipoRegistro == 3"&gt;
+  		&lt;campo nome="numProtocolo" tipo="Long" tam="16"/&gt;
+  		&lt;campo nome="codMotivoPrincipal" tipo="Short" tam="2"/&gt;
+  	&lt;/redefinicao&gt;
+</pre>
+<p></p>
+<a id="toc23" name="toc23"></a>
+<h3>Versão 1.5</h3>
+<h4>Acesso ao mapeamento</h4>
+<p>
+Agora o acesso ao arquivo <b>natapi.xml</b> é feito através de pesquisa nos recursos do aplicativo, e não mais externamente. Da maneira anterior não funcionava se o sistema fosse "empacotado" num arquivo <b>WAR</b>.
+</p>
+<a id="toc24" name="toc24"></a>
+<h2>TODO LIST</h2>
+<p>
+Possíveis funcionalidades apresentadas com a utilização da biblioteca.
+</p>
+<a id="toc25" name="toc25"></a>
+<h3>Melhorias</h3>
+<h4>Criação condicional</h4>
+<p>
+No retorno de listas com a quantidade de itens fixos, o <b>HiberNatural</b> cria todos os itens, populando os campos com "0" ou "".
+Seria interessante que houvesse um atributo onde a condição de existência de um item pudesse ser testada antes de criá-lo (ou não).
+</p>
+<pre>
+  	&lt;lista nome="motivosCombinados" classe="gov.pr.detran.veiculos.pojo.MotivoCombinado" qtd="6" criacao="codMotivoCombinado &gt; 0"&gt;
+  		&lt;campo nome="codMotivoCombinado" tipo="Byte" tam="2"/&gt;
+  	&lt;/lista&gt;
+</pre>
+<p></p>
+<hr class="light" />
+<p></p>
+<p>
+<img align="middle" src="lt_celepar.gif" border="0" alt=""/>
+© 2006 Companhia de Informática do Paraná - CELEPAR
+<a href="http://www.pr.gov.br/">http://www.pr.gov.br/</a>
+<img align="middle" src="t2tpowered.png" border="0" alt=""/>
+</p>
+
+<!-- xhtml code generated by txt2tags 2.3 (http://txt2tags.sf.net) -->
+<!-- cmdline: txt2tags -t xhtml -\-toc -o hibernatural.htm hibernatural.t2t -->
+</body></html>

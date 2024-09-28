@@ -1,0 +1,8 @@
+2.9.6 - Correção de NullpointerException na mensagem
+2.9.0 - pauloreis: permitir a parametrizacao do usuario natural (chave e senha) usado para criar a conexao.
+2.7.0 - possibilidade de espeficar uma condição para criação de objetos nas listas
+2.6.3 - leitura única dos programas no arquivo de configurações
+2.5.0 - tratamento de exceções caso não encontre as configurações no XML
+2.4.9 - lançar uma exceção nos casos onde o valor passado para um campo seja de tamanho maior que o tamanho definido
+2.4.8 - corrigido bug na criação de listas com separador
+2.4.7 - datas inválidas não eram validadas

@@ -1,0 +1,83 @@
+<!--
+	DTD for the Natural API Definition File, Version 2.1
+
+    To support validation of your configuration file, include the following
+    DOCTYPE element at the beginning (after the "xml" declaration):
+
+	<!DOCTYPE natapi-defs PUBLIC
+		"-//Celepar//Nat API Configuration 0.1//pt_BR"
+		"http://localhost/projetos/detran-habilitacao/natapi.dtd">
+
+	<!DOCTYPE natapi-defs PUBLIC "natapi" "natapi.dtd">
+
+	Created by Rodrigo Hjort (rhjort@celepar.pr.gov.br) on 2005-04-15.
+	References: http://www.rpbourret.com/xml/xmldtd.htm
+-->
+
+<!-- ========== Defined Types ============================================= -->
+
+<!ENTITY % Tratamento   "(tamanho-fixo|delimitador)">
+<!ENTITY % MetodoRedef  "(inicializar|copiar-atributos)">
+<!ENTITY % NomePrograma "ID">
+<!ENTITY % NomeClasse   "CDATA">
+<!ENTITY % NomeLista    "CDATA">
+<!ENTITY % NomeObjeto   "CDATA">
+<!ENTITY % NomeCampo    "CDATA">
+<!ENTITY % Atributo     "(campo|lista|objeto|fixo|espaco|aspas|virgula|redefinicao)">
+<!ENTITY % TipoCampo    "(String|Byte|Short|Integer|Long|Float|Double|BigDecimal|Date)">
+<!ENTITY % Mascara      "(ddMMyyyy|yyyyMMdd|yyyyMMddHHmmss|yyyyMM|HHmm)">
+
+<!-- ========== Top Level Elements ======================================== -->
+
+<!ELEMENT natapi-defs (programa+)>
+
+<!ELEMENT programa (entrada, saida)>
+<!ATTLIST programa         nome             %NomePrograma;   #REQUIRED>
+
+
+<!ELEMENT entrada ((%Atributo;)+)>
+<!ATTLIST entrada          classe           %NomeClasse;     #REQUIRED>
+<!ATTLIST entrada          tratamento       %Tratamento;     #REQUIRED>
+<!ATTLIST entrada          separador        CDATA            #IMPLIED>
+<!ATTLIST entrada          extremos         CDATA            #IMPLIED>
+
+<!ELEMENT saida ((%Atributo;)+)>
+<!ATTLIST saida            classe           %NomeClasse;     #REQUIRED>
+<!ATTLIST saida            tratamento       %Tratamento;     #REQUIRED>
+<!ATTLIST saida			   delimitador      CDATA            #IMPLIED>
+<!ATTLIST saida            separador        CDATA            #IMPLIED>
+<!ATTLIST saida            extremos         CDATA            #IMPLIED>
+
+<!ELEMENT lista ((%Atributo;)+)>
+<!ATTLIST lista            classe           %NomeClasse;     #REQUIRED>
+<!ATTLIST lista            nome             %NomeLista;      #REQUIRED>
+<!ATTLIST lista            qtd              CDATA            #IMPLIED>
+<!ATTLIST lista            separador        CDATA            #IMPLIED>
+
+<!ELEMENT objeto ((%Atributo;)+)>
+<!ATTLIST objeto           classe           %NomeClasse;     #REQUIRED>
+<!ATTLIST objeto           nome             %NomeObjeto;     #REQUIRED>
+<!ATTLIST objeto           separador        CDATA            #IMPLIED>
+
+<!ELEMENT campo EMPTY>
+<!ATTLIST campo            nome             %NomeCampo;      #REQUIRED>
+<!ATTLIST campo            tipo             %TipoCampo;      #REQUIRED>
+<!ATTLIST campo            tam              CDATA            #IMPLIED>
+<!ATTLIST campo            valor            CDATA            #IMPLIED>
+<!ATTLIST campo            dec              CDATA            #IMPLIED>
+<!ATTLIST campo            mascara          CDATA            #IMPLIED>
+
+<!ELEMENT redefinicao ((%Atributo;)+)>
+<!ATTLIST redefinicao      classe           %NomeClasse;     #REQUIRED>
+<!ATTLIST redefinicao      metodo           %MetodoRedef;    #REQUIRED>
+<!ATTLIST redefinicao      condicao         CDATA            #IMPLIED>
+
+<!ELEMENT fixo EMPTY>
+<!ATTLIST fixo             valor            CDATA            #REQUIRED>
+
+<!ELEMENT espaco EMPTY>
+<!ATTLIST espaco           tam              CDATA            #REQUIRED>
+
+<!ELEMENT aspas EMPTY>
+
+<!ELEMENT virgula EMPTY>

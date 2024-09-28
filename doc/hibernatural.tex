@@ -1,0 +1,914 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsfonts,graphicx}
+\usepackage[pdfstartview=FitH,urlcolor=blue,colorlinks=true,bookmarks=true]{hyperref}
+\pagestyle{plain}   % do page numbering ('empty' turns off)
+\frenchspacing      % no aditional spaces after periods
+\setlength{\parskip}{8pt}\parindent=0pt  % no paragraph indentation
+
+\title{HiberNatural}
+\begin{document}
+\date{Hibernate for Natural - GTI/CELEPAR}
+\maketitle
+\clearpage
+
+\subsection*{O que é isso?!}
+\textbf{HiberNatural} é uma biblioteca em Java que faz o mapeamento "objeto-texto" de chamadas ao \textbf{Mainframe} via \textbf{NatAPI}. Pela sua funcionalidade e característica de camada, faz o papel do \textbf{Hibernate} para o \textbf{Natural}. Nesta perspectiva, a \textbf{NatAPI} seria o análogo ao \textbf{Driver JDBC}.
+
+Com ela, há maior transparência nos processos de acesso ao \textbf{Natural}, e o programador não precisa se preocupar com tratamento de \textit{substrings}, aumentando a produtividade e reduzindo o risco de erros. Basta criar um objeto, executar um método e receber outro objeto!
+
+\subsection*{Arquitetura}
+\includegraphics{esquema-hn.png}
+
+\begin{enumerate}
+\item objeto do tipo \textbf{DTO} é instanciado e tem suas propriedades atribuídas
+\item HiberNatural é executado
+  \begin{itemize}
+  \item a partir do objeto DTO, cria-se a string de envio ao programa Natural
+  \item chamada ao Mainframe através da NatAPI
+    \begin{itemize}
+    \item leitura de RC (\textit{return code}), MSG (mensagem de erro) e da saída (\textit{data parameter})
+    \end{itemize}
+  \item parse da string de retorno e criação do objeto de saída
+  \end{itemize}
+\item objeto do tipo \textbf{POJO} é criado e retornado
+\end{enumerate}
+
+\subsection*{Exemplo de Código}
+\subsubsection*{NatAPI Pura}
+\begin{verbatim}
+// manipulação da string de envio
+String entrada = "";
+//...
+
+// chamada ao mainframe via NatAPI
+Natural nat = new Natural("PRG001", entrada);
+
+// verificar código de retorno
+if (nat.getRC() == 0) {
+	
+	// interpretação da string de retorno
+	String saida = nat.getDataParameter();
+	
+	// manipulação da string de retorno
+	//...
+	
+	// criação de objetos e atribuição de valores
+	//...
+
+// se houve erro...
+} else {
+
+	// captura da mensagem de erro
+	String msg = nat.getMsg();
+	
+	// tratamento de erro
+	//...
+}
+\end{verbatim}
+
+\subsubsection*{HiberNatural}
+\begin{verbatim}
+// criação do objeto de envio (DTO)
+SITVN041DTO dto = new SITVN041DTO();
+dto.setPlaca("ASA0610");
+dto.setNumProcesso(2006001300041015L);
+
+// chamada ao HiberNatural e criação do objeto de retorno (POJO)
+NaturalSITVN041DAO dao = new NaturalSITVN041DAO();
+SITVN041 pojo = (SITVN041) dao.executar(dto);
+\end{verbatim}
+
+\subsection*{Instalação}
+As seguintes bibliotecas (versão igual ou superior) são necessárias:
+
+\begin{enumerate}
+\item \textbf{Jasppion (NatAPI)}: jasppion-1.0.7.jar
+\item \textbf{Log4j}: log4j-1.2.8.jar
+\item \textbf{Commons HTTP Client}: commons-httpclient-2.0.jar
+\item \textbf{Commons Languages}: commons-lang-1.0.1.jar
+\item \textbf{Commons Logging}: commons-logging-1.0.4.jar
+\end{enumerate}
+
+Para realizar a instalação, basta:
+
+\begin{itemize}
+\item copiar os arquivos acima e a \textbf{hibernatural-$<$versão$>$.jar} para o diretório \textit{lib} do aplicativo
+\item criar o arquivo de mapeamento \textbf{natapi.xml} no diretório \textit{src}
+\item criar o arquivo de usuários e senhas \textbf{PRG.properties} (onde \textit{PRG} é a sigla do aplicativo no Natural) no diretório \textit{src}
+\item criar classe do tipo DAO, herdada da \textbf{BaseNaturalDAO}
+\end{itemize}
+
+\subsection*{Mapeamento}
+Para a execução do \textbf{HiberNatural}, é preciso criar o arquivo \textbf{natapi.xml}, o qual deve ficar num diretório definido no \textit{CLASSPATH} do aplicativo (geralmente \textit{src}). Este \textbf{XML} obedece ao arquivo \textbf{DTD} \textbf{natapi.dtd}, incluído no arquivo \textbf{JAR}, que contém todas as regras para sua validação.
+
+Não pode existir mais de um \textbf{programa} com o mesmo nome, e cada um deles deve ter \textbf{entrada} e \textbf{saída}. Nestas últimas tags estarão contidos um ou mais atributos (\textbf{constantes}, \textbf{campos}, \textbf{listas} e \textbf{objetos}).
+
+Como a biblioteca é baseada em programação orientada a objetos, é um pré-requisito que as classes especificadas estejam criadas (e já compiladas) e pelo menos com as propriedades indicadas. Há também sensitividade de caixa no arquivo XML.
+
+\subsubsection*{Validação}
+Para verificar se o arquivo de configurações \textbf{"natapi.xml"} contém erros, faça o seguinte:
+
+\begin{enumerate}
+\item inclua no "natapi.xml" a indicação da \textbf{DTD}, como no exemplo abaixo:
+\begin{verbatim}
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE natapi-defs PUBLIC "natapi" "http://10.15.61.6/hibernatural/natapi-2.1.dtd">
+
+<natapi-defs>
+	...
+</natapi-defs>
+\end{verbatim}
+
+\item no \textbf{Eclipse}, abra o arquivo "natapi.xml", clique com o botão direito e selecione a opção \textbf{Validate}
+\end{enumerate}
+
+Abaixo seguem exemplos de mapeamentos já utilizados nos sistemas \textbf{DETRAN / Habilitação}, \textbf{DETRAN / Veículos} e \textbf{SEFA / IVA (IPVA)}.
+
+\subsubsection*{Exemplo 1: DETRAN / Habilitação}
+\paragraph{}\textbf{DUTHN151 - Mapeamento}\\
+
+\begin{verbatim}
+<programa nome="DUTHN151">
+	<entrada tratamento="tamanho-fixo" extremos="&#034;" classe="gov.pr.detran.habilitacao.dto.DutHN151DTO">
+		<campo nome="numProcesso" tipo="Long" tam="9" />
+		<campo nome="nomeCandidato" tipo="String" tam="44" />
+		<campo nome="dataNascimento" tipo="Date" tam="8" />
+		<campo nome="sexo" tipo="Integer" tam="1" />
+		<campo nome="nomeMae" tipo="String" tam="44" />
+		<campo nome="tipoDocto" tipo="String" tam="1" />
+		<campo nome="numDocto" tipo="String" tam="15" />
+		<campo nome="siglaDocto" tipo="String" tam="10" />
+		<campo nome="ufDocto" tipo="String" tam="2" />
+		<campo nome="cpf" tipo="Long" tam="11" />
+		<campo nome="codNaturalidade" tipo="Integer" tam="4" />
+		<campo nome="numPGU" tipo="Long" tam="9" />
+		<lista nome="motivos" classe="gov.pr.detran.habilitacao.dto.MotivoProcessoDTO" qtd="4">
+			<campo nome="codMotivo" tipo="Integer" tam="3" />
+		</lista>
+		<campo nome="codNacionalidade" tipo="Integer" tam="1" />
+		<campo nome="codCondicionalidade" tipo="Integer" tam="1" />
+		<campo nome="numGuia" tipo="Long" tam="12" />
+		<campo nome="situacao" tipo="String" tam="1" />
+		<campo nome="dataCadastro" tipo="Date" tam="8" />
+		<campo nome="dataValidade" tipo="Date" tam="8" />
+		<campo nome="valor" tipo="Double" tam="15" dec="2" />
+		<campo nome="indServicos" tipo="Integer" tam="2" />
+		<lista nome="servicos" classe="gov.pr.detran.habilitacao.dto.GuiaServicoDTO" qtd="10">
+			<campo nome="codServico" tipo="Integer" tam="5" />
+			<campo nome="valorServico" tipo="Double" tam="15" dec="4" />
+			<campo nome="qtdeServico" tipo="Integer" tam="2" />
+		</lista>
+	</entrada>
+	<saida tratamento="tamanho-fixo" classe="gov.pr.detran.habilitacao.pojo.DutHN151">
+		<campo nome="inicio" tipo="Integer" tam="5" />
+		<campo nome="codErro" tipo="Integer" tam="5" />
+		<campo nome="tipoErro" tipo="Integer" tam="1" />
+		<campo nome="indCondicionalidade" tipo="Short" tam="1" />
+	</saida>
+</programa>
+\end{verbatim}
+
+\paragraph{}\textbf{DUTHN151 - Natural}\\
+
+\begin{verbatim}
+01 PA-RC                          				(N004)
+01 PA-MSG                         				(A060)
+*
+LOCAL
+01 ENTRADA
+     02 RECL1                      				(N004) INIT <440> /* tam. esperado
+     02 RECL2                       				(N004)                  /* tam. recebido
+*
+01 PA-DADOS-IN                   			 (A440)
+01 REDEFINE PA-DADOS-IN
+*
+     02 PA-ASPA                     				(A001)
+*
+     02 PA-NUMERO-PROCESSO            		(N009)
+     02 REDEFINE PA-NUMERO-PROCESSO
+          03 PA-NUMERO-PROCESSO-A        	(A009)
+*
+     02 PA-NOME-CANDIDATO             		(A044)
+     02 PA-DATA-NASCIMENTO            		(N008)  /* AAAAMMDD
+     02 PA-SEXO                       			(N001)
+     02 PA-NOME-MAE                   			(A044)
+*
+     02 PA-DOCUM-IDENTIDADE           		(A028)
+     02 REDEFINE PA-DOCUM-IDENTIDADE
+         03 PA-TIPO-DOC                 			(N001)
+         03 PA-NUM-IDENT                			(A015)
+         03 PA-ORGAO-EMISS              		(A010)
+         03 PA-UF-DOC                   			(A002)
+ *
+     02 PA-CPF                        				(N011)
+     02 PA-LOCAL-NASCIM               		(N004)  /* Cód Fiscal ou Cod. País
+     02 REDEFINE PA-LOCAL-NASCIM
+          03 PA-LOCAL-NASCIM-A           		(A004)
+ *
+     02 PA-PGU                        			(N009)  /* COM DV (Num Registro CNH)
+     02 REDEFINE PA-PGU
+           03 PA-PGU-SEM-DV             		(N008)
+ *
+     02 PA-MOTIVO-REQUER              		(N003/004) // MotivoProcesso
+     02 PA-NACIONALIDADE             		(N001)
+     02 PA-CONDICIONALIDADE           		(N001) // variável utilizada no UCS
+*
+* ----- DADOS GUIA
+*
+     02 PA-NUM-GUIA-IN                			(N012) /* sem DV
+     02 PA-SITUACAO-IN           			(A001)
+     02 PA-DATA-CADASTRO-IN           		(N008)  /* AAAAMMDD ? dt. Emis. guia
+     02 REDEFINE PA-DATA-CADASTRO-IN
+          03 FILLER                      			(A002)
+          03 PA-DATA-CAD-N6-IN           		(N006)
+     02 PA-DATA-VALIDADE-IN           		(N008)  /* AAAAMMDD
+     02 PA-VALOR-IN                   			(N013,2) /* Valor em reais
+     02 PA-IND-SERVICOS-IN            		(N002)    /* Qtde. de serviços da guia
+     02 PA-SERVICOS-IN                    		(010)
+          03 PA-COD-SERVICO-IN               		(N005)
+          03 PA-VALOR-SERVICO-IN             	(N011,4) /* Valor original não convertido
+           para reais
+          03 PA-QTD-SERVICO-IN               		(N002) /* Número de vezes que o mesmo 
+                   serviço foi computado
+     02 PA-ASPA2                      			(A001)
+*
+01 SAIDA
+*
+     02 RECL3                       				(N004) INIT <007> /* Tamanho devolvido
+     02 RECL4                       				(N004)   /* Tamanho efetivamente gravado
+*
+01 PA-DADOS-OUT
+     02 PA-CODIGO-ERRO-OUT          		(N005)
+     02 PA-TIPO-ERRO-OUT            			(N001)
+     02 PA-IND-CONDICIONALIDADE-OUT         (N001)   
+\end{verbatim}
+
+\subsubsection*{Exemplo 2: DETRAN / Veículos}
+\paragraph{}\textbf{SITVN601 - Mapeamento}\\
+
+\begin{verbatim}
+<programa nome="SITVN601">
+	<entrada tratamento="tamanho-fixo" separador="," extremos="," classe="gov.pr.detran.veiculos.dto.SITVN601DTO">
+		<campo nome="tipoAcesso" tipo="Short" tam="2"/>
+		<campo nome="placa" tipo="String" tam="7"/>
+		<campo nome="chassi" tipo="String" tam="21"/>
+		<campo nome="renavam" tipo="Long" tam="9"/>
+		<campo nome="nomeProprietario" tipo="String" tam="60"/>
+		<campo nome="numCicProprietario" tipo="Long" tam="14"/>
+		<lista nome="funcoes" classe="gov.pr.detran.veiculos.pojo.FuncaoEspecial" qtd="10" separador="">
+			<campo nome="codFuncao" tipo="Integer" tam="3"/>
+		</lista>
+		<campo nome="tipoDoctoProprietario" tipo="Byte" tam="1"/>
+		<campo nome="orgaoExpedidorDoctoProprietario" tipo="String" tam="10"/>
+		<campo nome="ufDoctoProprietario" tipo="String" tam="2"/>
+		<campo nome="numDoctoProprietario" tipo="String" tam="15"/>
+		<campo nome="numCnhProprietario" tipo="Long" tam="11"/>
+	</entrada>
+	<saida tratamento="tamanho-fixo" classe="gov.pr.detran.veiculos.pojo.SITVN601Retorno">
+		<campo nome="qtde" tipo="Integer" tam="5"/>
+		<!-- tamanho de cada registro: 933 -->
+		<lista nome="registros" classe="gov.pr.detran.veiculos.pojo.SITVN601" qtd="$qtde">
+			<campo nome="codRetorno" tipo="Long" tam="5"/>
+			<campo nome="codErro" tipo="Integer" tam="4"/>
+			<campo nome="progErro" tipo="String" tam="8"/>
+			<campo nome="linhaErro" tipo="Integer" tam="4"/>
+			<campo nome="evento" tipo="Integer" tam="4"/>
+			<campo nome="codTransacao" tipo="Integer" tam="3"/>
+			<campo nome="seqTransacao" tipo="Integer" tam="4"/>
+			<campo nome="retTransacao" tipo="Short" tam="2"/>
+			<campo nome="msgErroTransacao" tipo="String" tam="25"/>
+			<campo nome="tipoRegistro" tipo="Byte" tam="1"/>
+			<!-- <campo nome="resto" tipo="String" tam="873"/> -->
+			<!-- tamanho do cabeçalho: 60, restantes: 873 -->
+			<redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R1" condicao="$tipoRegistro == 1">
+				<campo nome="placa" tipo="String" tam="7"/>
+				<campo nome="renavam" tipo="Long" tam="9"/>
+				<campo nome="tipoVeiculo" tipo="Short" tam="2"/>
+				<campo nome="codMarcaModelo" tipo="Integer" tam="6"/>
+				<campo nome="anoFabricacao" tipo="Integer" tam="4"/>
+				<campo nome="codCor" tipo="Short" tam="2"/>
+				<campo nome="dataAquisicao" tipo="Date" tam="8"/>
+				<campo nome="codSituacaoVeiculo" tipo="Short" tam="2"/>
+				<espaco tam="833"/>
+			</redefinicao>
+			<redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R2" condicao="$tipoRegistro == 2">
+				<campo nome="placa" tipo="String" tam="7"/>
+				<campo nome="renavam" tipo="Long" tam="9"/>
+				<campo nome="codMunicipioEmplacamento" tipo="Integer" tam="4"/>
+				<campo nome="chassi" tipo="String" tam="21"/>
+				<campo nome="indChassiRegravado" tipo="Byte" tam="1"/>
+				<campo nome="indLiberaChassi" tipo="Byte" tam="1"/>
+				<campo nome="indLiberaTamanho" tipo="Byte" tam="1"/>
+				<campo nome="codTipoVeiculo" tipo="Short" tam="2"/>
+				<campo nome="codMarcaModelo" tipo="Long" tam="6"/>
+				<espaco tam="821"/>
+			</redefinicao>
+			<redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R3" condicao="$tipoRegistro == 3">
+				<campo nome="numProtocolo" tipo="Long" tam="16"/>
+				<campo nome="codMotivoPrincipal" tipo="Short" tam="2"/>
+				<lista nome="motivosCombinados" classe="gov.pr.detran.veiculos.pojo.MotivoCombinado" qtd="6" separador="">
+					<campo nome="codMotivoCombinado" tipo="Byte" tam="2"/>
+				</lista>
+				<espaco tam="843"/>
+			</redefinicao>
+			<redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R4" condicao="$tipoRegistro == 4">
+				<espaco tam="50"/>
+				<campo nome="codMunicipioExpedidorOficio" tipo="Integer" tam="4"/>
+				<campo nome="codMotivoBloqueio" tipo="Integer" tam="3"/>
+				<campo nome="numProcessoLiberacao" tipo="Long" tam="16"/>
+				<campo nome="orgaoExpedidorOficio" tipo="String" tam="240"/>
+				<campo nome="codTipoBloqueio" tipo="Byte" tam="1"/>
+				<campo nome="codSetorBloqueio" tipo="Byte" tam="2"/>
+				<espaco tam="557"/>
+			</redefinicao>
+			<redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R5" condicao="$tipoRegistro == 5">
+				<campo nome="tipoProcesso" tipo="Byte" tam="2"/>
+				<campo nome="numProcessoApreensao" tipo="Long" tam="16"/>
+				<campo nome="dthrProcessoApreensao" tipo="Date" tam="14" mascara="yyyyMMddHHmmss"/>
+				<campo nome="codMotivoApreensao" tipo="Byte" tam="2"/>
+				<campo nome="codPatio" tipo="Integer" tam="4"/>
+				<campo nome="numRegistroPatio" tipo="Long" tam="9"/>
+				<campo nome="placa" tipo="String" tam="7"/>
+				<campo nome="renavam" tipo="Long" tam="9"/>
+				<campo nome="chassi" tipo="String" tam="21"/>
+				<campo nome="indRemarcacaoChassi" tipo="Byte" tam="1"/>
+				<campo nome="codTipoVeiculo" tipo="Byte" tam="2"/>
+				<campo nome="indChassiApreensao" tipo="Byte" tam="1"/>
+				<campo nome="indBloqueioApreensao" tipo="Byte" tam="1"/>
+				<campo nome="indRouboFurto" tipo="Byte" tam="1"/>
+				<campo nome="utrProcessamento" tipo="Integer" tam="3"/>
+				<espaco tam="780"/>
+			</redefinicao>
+			<redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R6" condicao="$tipoRegistro == 6">
+				<campo nome="numMotor" tipo="String" tam="21"/>
+				<campo nome="numCambio" tipo="String" tam="21"/>
+				<campo nome="indLiberacaoParaChoqueEspecial" tipo="Byte" tam="1"/>
+				<campo nome="indTurboCompressor" tipo="Byte" tam="1"/>
+				<campo nome="indMunck" tipo="Byte" tam="1"/>
+				<espaco tam="828"/>
+			</redefinicao>
+			<redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R7" condicao="$tipoRegistro == 7">
+				<campo nome="anoCSV" tipo="String" tam="120"/>
+				<campo nome="numCSV" tipo="String" tam="300"/>
+				<espaco tam="453"/>
+			</redefinicao>
+		</lista>
+	</saida>
+</programa>
+\end{verbatim}
+
+\subsubsection*{Exemplo 3: SEFA / IVA (IPVA)}
+\paragraph{}\textbf{IVAFN05X - Mapeamento}\\
+
+\begin{verbatim}
+<programa nome="IVAFN05X">
+	<entrada tratamento="tamanho-fixo" classe="gov.pr.sefa.iva.dto.IVAFN05XDTO">
+		<campo nome="dataCalculo" 	tipo="Date" 	tam="8" mascara="yyyyMMdd"/>
+		<campo nome="renavam"		tipo="Integer" 	tam="9"/>
+		<campo nome="numeroTap"		tipo="Integer" 	tam="9"/>
+		<campo nome="numeroParc"	tipo="Short" 	tam="2"/>
+		<campo nome="anoBase"		tipo="Integer" 	tam="4"/>
+	</entrada>
+	<saida tratamento="tamanho-fixo" classe="gov.pr.sefa.iva.pojo.IVAFN05X">
+		<campo nome="dataCalculo" 	tipo="Date" 	tam="8" mascara="yyyyMMdd"/>
+		<campo nome="renavam"		tipo="Integer" 	tam="9"/>
+		<campo nome="numeroTap"		tipo="Integer" 	tam="9"/>
+		<campo nome="numeroParc"	tipo="Short" 	tam="2"/>
+		<campo nome="anoBase"		tipo="Integer" 	tam="4"/>
+		<lista nome="Parcela" classe="gov.pr.sefa.iva.pojo.Parcela" qtd="15">
+			<campo nome="dataVcto"			tipo="Date"		tam="8"	mascara="yyyyMMdd"/>
+			<campo nome="vlrImpMul"			tipo="Double"	tam="9" dec="2" />
+			<campo nome="vlrCorMon" 		tipo="Double"	tam="9" dec="2" />
+			<campo nome="vlrJuros"			tipo="Double"	tam="9" dec="2" />
+			<campo nome="vlrJurosSaldo"		tipo="Double"	tam="9" dec="2" />
+			<campo nome="vlrJurosParc"		tipo="Double"	tam="9" dec="2" />
+			<campo nome="vlrCorMonR"		tipo="Double"	tam="9" dec="2" />
+			<campo nome="vlrJurosParcR"		tipo="Double"	tam="9" dec="2" />
+			<campo nome="vlrJurosSaldoDev"	tipo="Double"	tam="9" dec="2" />
+			<campo nome="taxaVincendo"		tipo="Double"	tam="7"	dec="4" />
+			<campo nome="taxaMora"			tipo="Double"	tam="7" dec="4" />
+			<campo nome="taxaResiduo"		tipo="Double"	tam="7"	dec="4" />
+			<campo nome="anoMesTaxa"		tipo="Integer"	tam="6" />
+			<campo nome="saldoPagto"		tipo="Double"	tam="9" dec="2" />
+			<campo nome="vlrPagto"			tipo="Double"	tam="9" dec="2" />
+			<campo nome="saldoPagtoD"		tipo="Double"	tam="9" dec="2"	/>
+			<campo nome="dtPagto"			tipo="Date"		tam="8" mascara="yyyyMMdd"/>
+			<campo nome="sitParc"			tipo="Byte"		tam="1"	/>
+			<campo nome="indCorrecao"		tipo="Double"	tam="9" dec="4" />
+			<campo nome="temAntecipacao"	tipo="Byte"		tam="1" />
+		</lista>
+	</saida>
+</programa>
+\end{verbatim}
+
+\subsection*{Depuração}
+As classes que compõem o Hibernatural fazem uso da biblioteca \textbf{Log4j} para geração de LOGs. Um \textit{appender} chamado \textbf{"gov.pr.celepar.util.natapi"} é instanciado internamente, de modo que o arquivo \textbf{log4j.properties} pode ser configurado também para chamadas ao Mainframe. Veja exemplo:
+
+\begin{verbatim}
+log4j.rootLogger=DEBUG, stdout
+log4j.logger.gov.pr.celepar.util.natapi=DEBUG, arquivo
+
+# exibição no console
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.Target=System.out
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%m%n
+#log4j.appender.stdout.Threshold=INFO
+log4j.appender.stdout.Threshold=DEBUG
+
+# inclusão de linhas no arquivo
+log4j.appender.arquivo=org.apache.log4j.RollingFileAppender
+log4j.appender.arquivo.File=/tmp/natapi.log
+log4j.appender.arquivo.MaxFileSize=500KB
+log4j.appender.arquivo.MaxBackupIndex=3
+log4j.appender.arquivo.layout=org.apache.log4j.PatternLayout
+log4j.appender.arquivo.layout.ConversionPattern=%m%n
+log4j.appender.arquivo.Threshold=DEBUG
+\end{verbatim}
+
+Desta forma, a depuração pode torna-se mais produtiva, por exemplo, através da instrução:
+
+\begin{verbatim}
+$ tail -f natapi.log
+\end{verbatim}
+
+\subsubsection*{Nível INFO}
+São exibidos, no nível \textbf{INFO}:
+
+\begin{itemize}
+\item nome do programa
+\item string de envio
+\item RC (\textit{return code})
+\item mensagem de erro
+\item string de retorno
+\end{itemize}
+
+Exemplo:
+
+\begin{verbatim}
+--------------------------------------------------------------------------------
+Chamada API Natural: DUTHN804
+> entrada: ""000000138123218737870E20051014200510140000000000254230200001000000001752300020000200000
+0005415000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000""
+> rc: 0, mensagem: ""
+> saída: "00001053021"
+--------------------------------------------------------------------------------
+\end{verbatim}
+
+\subsubsection*{Nível DEBUG}
+Já no nível \textbf{DEBUG} são mostrados:
+
+\begin{itemize}
+\item objeto de entrada (DTO) e seus atributos, recursivamente
+\item informações do nível \textbf{INFO}
+\item objeto de saída (POJO) e seus atributos, recursivamente
+\end{itemize}
+
+Exemplos:
+
+\begin{verbatim}
+Lendo configuração do programa Natural DUTHN178...
+
+********************************************************************************
+Criando string para envio ao Natural...
++ gov.pr.detran.habilitacao.dto.DutHN178DTO@b86944
+- tipoPGU: "2"
+- numPGU: "58735234"
+- tipoDocto: "null"
+- numDocto: "null"
+- siglaDocto: "null"
+- ufDocto: "null"
+- nomeCandidato: "null"
+- nomeMae: "null"
+- dataNascimento: "null"
+- numProcesso: "75238745"
+--------------------------------------------------------------------------------
+Chamada API Natural: DUTHN178
+> entrada: ""20587352340                                                                            
+                                       00000000075238745""
+> rc: 0, mensagem: ""
+> saída: "00001050031"
+--------------------------------------------------------------------------------
+Processando linha recebida do Natural...
++ gov.pr.detran.habilitacao.pojo.DutHN178@1642bd6
+- inicio: "1"
+- codErro: "5003"
+- tipoErro: "1"
+********************************************************************************
+
+Lendo configuração do programa Natural SITVN601...
+
+********************************************************************************
+Criando string para envio ao Natural...
++ gov.pr.detran.veiculos.dto.SITVN601DTO@c3e9e9
+- tipoAcesso: "1"
+- placa: "BCC6019"
+- chassi: "null"
+- renavam: "null"
+- nomeProprietario: "null"
+- numCicProprietario: "null"
++ funcoes[0]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@31f2a7
+  - codFuncao: "18"
++ funcoes[1]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@131c89c
+  - codFuncao: "20"
++ funcoes[2]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@1697b67
+  - codFuncao: "null"
++ funcoes[3]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@24c4a3
+  - codFuncao: "null"
++ funcoes[4]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@1e9c82e
+  - codFuncao: "null"
++ funcoes[5]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@1554d32
+  - codFuncao: "null"
++ funcoes[6]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@13f136e
+  - codFuncao: "null"
++ funcoes[7]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@14a18d
+  - codFuncao: "null"
++ funcoes[8]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@7a4489
+  - codFuncao: "null"
++ funcoes[9]: gov.pr.detran.veiculos.pojo.FuncaoEspecial@129b0e1
+  - codFuncao: "null"
+- tipoDoctoProprietario: "null"
+- orgaoExpedidorDoctoProprietario: "null"
+- ufDoctoProprietario: "null"
+- numDoctoProprietario: "null"
+- numCnhProprietario: "null"
+--------------------------------------------------------------------------------
+Chamada API Natural: SITVN601
+> entrada: ",01,BCC6019,                     ,000000000,                                            
+                ,00000000000000,018020000000000000000000000000,0,          ,  ,               ,00000
+000000,"
+> rc: 0, mensagem: ""
+> saída: "00006000000000SITVN60100000000000000000                         2BCC60195134555907535BS361
+915             200061179041020197319731005000000052000001009000000000000000000000000000000000000000
+00000020040120042004111200000010100036581240915042140660      MARIA FRANCISCA DE JESUS ALVES        
+                      00200410301SESP      PR0033001177086001970R VATER LOPES             00242CASA 
+     CJ RES HORIZONTE    7535100004373358958699271810      LUCIANA HELENA FERREIRA                  
+                   001SESP      PR00000000000000000                       000000000000000           
+         00000000000000000000000000        000000000000000000000004799462347667A01                  
+                                          00000000000000000000000                          00000    
+                          000000000000                                            200411181112560110
+                               00000000000000000000000000SITVN60100000000000000000                  
+       6                                          000                                               
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                 000000000SITVN60100
+000000000000000                         32004072305670090020000000000000000 0000 0000 0000 0000 0000
+ 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000
+ 0000 0000 0000 0000 580440186A20041118111256  000000000000000000000000                             
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+              000000000SITVN60100000000000000000                         7                          
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                               000000000SITVN60100000000000000000                   
+      4                                                  00000000000000000000000                    
+                                                                                                    
+                                                                                                    
+                    000                                                                             
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                000000000SITVN601000
+00000000000000                         554200501730041621720050930144621010004000031138BCC6019513455
+590BS361915             206100017                                                                   
+                                                                      0000                          
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+                                                                                                    
+             "
+--------------------------------------------------------------------------------
+Processando linha recebida do Natural...
++ gov.pr.detran.veiculos.pojo.SITVN601Retorno@132ae7
+- qtde: "6"
++ registros[0]: gov.pr.detran.veiculos.pojo.SITVN601@65b738
+  - codRetorno: "0"
+  - codErro: "0"
+  - progErro: "SITVN601"
+  - linhaErro: "0"
+  - evento: "0"
+  - codTransacao: "0"
+  - seqTransacao: "0"
+  - retTransacao: "0"
+  - msgErroTransacao: ""
+  - tipoRegistro: "2"
+  + redefinição ($tipoRegistro == 2): gov.pr.detran.veiculos.pojo.SITVN601R2@1dfd868
+    - placa: "BCC6019"
+    - renavam: "513455590"
+    - codMunicipioEmplacamento: "7535"
+    - chassi: "BS361915"
+    - indChassiRegravado: "2"
+    - indLiberaChassi: "0"
+    - indLiberaTamanho: "0"
+    - codTipoVeiculo: "6"
+    - codMarcaModelo: "117904"
++ registros[1]: gov.pr.detran.veiculos.pojo.SITVN601@f894ce
+  - codRetorno: "0"
+  - codErro: "0"
+  - progErro: "SITVN601"
+  - linhaErro: "0"
+  - evento: "0"
+  - codTransacao: "0"
+  - seqTransacao: "0"
+  - retTransacao: "0"
+  - msgErroTransacao: ""
+  - tipoRegistro: "6"
+  + redefinição ($tipoRegistro == 6): gov.pr.detran.veiculos.pojo.SITVN601R6@45e228
+    - numMotor: ""
+    - numCambio: ""
+    - indLiberacaoParaChoqueEspecial: "0"
+    - indTurboCompressor: "0"
+    - indMunck: "0"
++ registros[2]: gov.pr.detran.veiculos.pojo.SITVN601@2b249
+  - codRetorno: "0"
+  - codErro: "0"
+  - progErro: "SITVN601"
+  - linhaErro: "0"
+  - evento: "0"
+  - codTransacao: "0"
+  - seqTransacao: "0"
+  - retTransacao: "0"
+  - msgErroTransacao: ""
+  - tipoRegistro: "3"
+  + redefinição ($tipoRegistro == 3): gov.pr.detran.veiculos.pojo.SITVN601R3@106daba
+    - numProtocolo: "2004072305670090"
+    - codMotivoPrincipal: "2"
+    + motivosCombinados[0]: gov.pr.detran.veiculos.pojo.MotivoCombinado@1021f34
+      - codMotivoCombinado: "0"
+    + motivosCombinados[1]: gov.pr.detran.veiculos.pojo.MotivoCombinado@4eb043
+      - codMotivoCombinado: "0"
+    + motivosCombinados[2]: gov.pr.detran.veiculos.pojo.MotivoCombinado@163956
+      - codMotivoCombinado: "0"
+    + motivosCombinados[3]: gov.pr.detran.veiculos.pojo.MotivoCombinado@10e434d
+      - codMotivoCombinado: "0"
+    + motivosCombinados[4]: gov.pr.detran.veiculos.pojo.MotivoCombinado@16477d9
+      - codMotivoCombinado: "0"
+    + motivosCombinados[5]: gov.pr.detran.veiculos.pojo.MotivoCombinado@f864fe
+      - codMotivoCombinado: "0"
++ registros[3]: gov.pr.detran.veiculos.pojo.SITVN601@1ae9aaa
+  - codRetorno: "0"
+  - codErro: "0"
+  - progErro: "SITVN601"
+  - linhaErro: "0"
+  - evento: "0"
+  - codTransacao: "0"
+  - seqTransacao: "0"
+  - retTransacao: "0"
+  - msgErroTransacao: ""
+  - tipoRegistro: "7"
+  + redefinição ($tipoRegistro == 7): gov.pr.detran.veiculos.pojo.SITVN601R7@33788d
+    - anoCSV: ""
+    - numCSV: ""
++ registros[4]: gov.pr.detran.veiculos.pojo.SITVN601@12fb0af
+  - codRetorno: "0"
+  - codErro: "0"
+  - progErro: "SITVN601"
+  - linhaErro: "0"
+  - evento: "0"
+  - codTransacao: "0"
+  - seqTransacao: "0"
+  - retTransacao: "0"
+  - msgErroTransacao: ""
+  - tipoRegistro: "4"
+  + redefinição ($tipoRegistro == 4): gov.pr.detran.veiculos.pojo.SITVN601R4@1f8bd0d
+    - codMunicipioExpedidorOficio: "0"
+    - codMotivoBloqueio: "0"
+    - numProcessoLiberacao: "0"
+    - orgaoExpedidorOficio: ""
+    - codTipoBloqueio: "0"
+    - codSetorBloqueio: "0"
++ registros[5]: gov.pr.detran.veiculos.pojo.SITVN601@143bf3d
+  - codRetorno: "0"
+  - codErro: "0"
+  - progErro: "SITVN601"
+  - linhaErro: "0"
+  - evento: "0"
+  - codTransacao: "0"
+  - seqTransacao: "0"
+  - retTransacao: "0"
+  - msgErroTransacao: ""
+  - tipoRegistro: "5"
+  + redefinição ($tipoRegistro == 5): gov.pr.detran.veiculos.pojo.SITVN601R5@c06258
+    - tipoProcesso: "54"
+    - numProcessoApreensao: "2005017300416217"
+    - dthrProcessoApreensao: "30/09/2005 14:46:21"
+    - codMotivoApreensao: "1"
+    - codPatio: "4"
+    - numRegistroPatio: "31138"
+    - placa: "BCC6019"
+    - renavam: "513455590"
+    - chassi: "BS361915"
+    - indRemarcacaoChassi: "2"
+    - codTipoVeiculo: "6"
+    - indChassiApreensao: "1"
+    - indBloqueioApreensao: "0"
+    - indRouboFurto: "0"
+    - utrProcessamento: "17"
+********************************************************************************
+
+\end{verbatim}
+
+\subsection*{Integração com o Framework}
+\subsubsection*{Arquivo de Recursos}
+\begin{verbatim}
+**ApplicationResources.properties**:
+mensagem.padrao=Sistema temporariamente indisponível. Aguarde alguns instantes e tente novamente.
+mensagem.natapi=Não foi possível executar serviço da API Natural.
+mensagem.natapi.bne=Não foi possível executar serviço da API Natural. Programa: {0} - RC: {1}: {2}
+2010=CÓDIGO DO RENAVAM INVÁLIDO.
+2011=GUIA NÃO APROPRIADA!
+2027=GUIA APROPRIADA COM SUCESSO.
+\end{verbatim}
+
+\subsection*{CHANGELOG}
+\subsubsection*{Versão 2.6}
+\paragraph{}\textbf{Correção de bugs}\\
+
+Erro \textit{NoSuchMethodException} era levantado quando diversas chamadas ao HiberNatural eram feitas de modo simultâneo. Isso foi corrigido com a implementação de um método \textbf{synchronized} numa abordagem do tipo \textbf{singleton}.
+
+\paragraph{}\textbf{Melhorias na leitura das definições}\\
+
+Anteriormente, a cada chamada de programa, o arquivo de configurações (natapi.xml) era relido. O código que fazia a leitura das definições de entrada e saída para um programa foi modificado, de modo que a leitura é realizada uma única vez, na primeira chamada de qualquer programa.
+
+Com isso, as execuções via HiberNatural tendem a ser muito mais rápidas.
+
+\subsubsection*{Versão 2.5}
+\paragraph{}\textbf{Melhorias no tratamento de exceções}\\
+
+Serão validados, ao instanciar a classe da HiberNatural:
+
+\begin{itemize}
+\item a existência do arquivo de propriedades \textbf{natapi.xml}
+\item a existência do programa especificado no arquivo
+\item a existência de parâmetros de entrada e saída para o programa
+\end{itemize}
+
+\subsubsection*{Versão 2.4}
+\paragraph{}\textbf{Correção de bugs}\\
+
+\begin{itemize}
+\item corrigido bug na criação de listas com separador
+\item datas inválidas vindas do Mainframe agora são desconsideradas (valor \textit{null})
+\end{itemize}
+
+\paragraph{}\textbf{Aviso sobre o tamanho de campos}\\
+
+Alteração para que a biblioteca passe a lançar uma exceção nos casos onde o valor passado para um campo seja de tamanho maior que o tamanho definido nas propriedades. Por exemplo, nesta definição de campo:
+
+\begin{verbatim}
+<campo nome="descrProcedencia" tipo="String" tam="3"/>
+\end{verbatim}
+Se no atributo \textit{descrProcedencia} o tamanho da String for maior que 3, lançar uma exceção dizendo que há um problema no tamanho deste campo.
+
+Essa melhoria ajudará na identificação de problemas dessa natureza em programas com muitos parâmetros de entrada ou saída.
+
+\subsubsection*{Versão 2.3}
+\paragraph{}\textbf{Classe de exceção}\\
+
+Foi criada a classe \textit{BaseNaturalException}, que será lançada no lugar da \textit{ApplicationException} quando houver erro da \textbf{NatAPI}, ou seja, RC (\textit{return code}) diferente de zero.
+
+\paragraph{}\textbf{Flexibilidade}\\
+
+Agora o \textbf{HiberNatural} não depende mais da biblioteca \textbf{framework.jar}. As exeções lançadas serão exclusivamente do tipo \textit{Exception}, e não mais \textit{ApplicationException}. Com isso, o \textbf{HiberNatural} torna-se mais flexível, podendo ser utilizado em projetos sem o padrão \textit{Framework}.
+
+\paragraph{}\textbf{Novos tipos}\\
+
+Foi adicionado suporte aos seguintes tipos de dados:
+
+\begin{itemize}
+\item \textbf{Float}: apesar de ter a metade da capacidade do \textit{Double}, não gera erros de arredondamento em certos casos
+\item \textbf{BigDecimal}: numérico com grande capacidade de armazenamento, comum em classes geradas pelo \textit{Middlegen} para o \textit{Hibernate}
+\end{itemize}
+
+Para o tipo \textbf{BigDecimal}, foi utilizado o construtor por \textit{String}, devido à imprecisão apresentada com o tipo \textit{double}.
+
+\paragraph{}\textbf{Melhoria na depuração}\\
+
+Exibição de maneira mais explícita, na saída de erro, tentativas sem sucesso de criação de classes (\textit{ClassNotFoundException}).
+
+\subsubsection*{Versão 2.1}
+\paragraph{}\textbf{Constantes}\\
+
+Esta funcionalidade faz com que trechos da string de retorno sejam automaticamente ignorados e dispensa a criação de propriedades "fixas" em objetos DTO para a string de envio.
+
+\begin{itemize}
+\item \textbf{$<$aspas/$>$}: representa "
+\item \textbf{$<$virgula/$>$}: representa ,
+\item \textbf{$<$espaco tam="5"/$>$}: representa uma cadeia de espaços do tamanho especificado
+\item \textbf{$<$fixo valor="XXX"/$>$}: inclui a constante especificada
+\end{itemize}
+
+\paragraph{}\textbf{Tag Objeto}\\
+
+Com isso, não será necessário usar mais a tag \textbf{$<$lista$>$} contendo apenas 1 item (\textit{qtd="1"}). Um objeto inteiro pode ser lido (para a entrada) ou criado (para a saída). Exemplo:
+
+\begin{verbatim}
+<objeto nome="sitvn200R1" classe="gov.pr.detran.veiculos.pojo.SITVN200R1">
+	<campo nome="tipoRegistro" tipo="Byte" tam="1"/>
+\end{verbatim}
+
+\paragraph{}\textbf{Conceito de contêiner}\\
+
+As tags \textbf{$<$lista$>$} e \textbf{$<$objeto$>$} implementam esta interface, e por isso são capazes de armazenar outros atributos. Assim, podem ser feitas listas dentro de listas, por exemplo. Recursividade é possível! Exemplo:
+
+\begin{verbatim}
+<lista nome="registros" classe="gov.pr.detran.veiculos.pojo.SITVN601" qtd="$qtde">
+	<lista nome="motivosCombinados" classe="gov.pr.detran.veiculos.pojo.MotivoCombinado" qtd="6" separador="">
+		<campo nome="codMotivoCombinado" tipo="Byte" tam="2"/>
+\end{verbatim}
+
+\paragraph{}\textbf{Separador e Extremos}\\
+
+Em alguns casos, os programas \textbf{Natural} esperam a string de entrada com os campos separados por um determinado caracter. Anteriormente, era preciso criar campos fixos do tipo \textit{String} entre os campos reais. Agora isso não será mais preciso, e os códigos ficarão muito mais enxutos e legíveis.
+Contêineres (Listas e Objetos) podem ter separadores diferenciados.
+Se a opção \textit{extremos} for especificada, a string será limitada por estes caracteres, como aspas duplas ou vírgulas. Exemplos:
+
+\begin{verbatim}
+<entrada extremos="&#034;" classe="gov.pr.detran.habilitacao.dto.DutHN151DTO">
+<entrada separador="," extremos="," classe="gov.pr.detran.veiculos.dto.SITVN601DTO">
+	<lista nome="funcoes" classe="gov.pr.detran.veiculos.pojo.FuncaoEspecial" qtd="10" separador="">
+\end{verbatim}
+
+\paragraph{}\textbf{Listas de tamanho variável}\\
+
+Com esse recurso, o tratamento de \textit{RecordSets} do \textbf{Natural} pode ser feito sem dificuldades! O caso dos primeiros 5 bytes que a \textbf{NatAPI} retorna ("00001" na maioria dos casos) torna-se um caso particular desta função. Para isso, a opção \textit{qtd} da lista, que geralmente contém um número fixo, deve ser preenchida com uma expressão. Para utilizar campos da própria classe, emprega-se o sinal de cifrão, semelhantemente à linguagem PHP. Exemplo:
+
+\begin{verbatim}
+<campo nome="qtdRegistros" tipo="Integer" tam="5"/>
+<lista nome="registros" qtd="$qtdRegistros">
+\end{verbatim}
+
+\paragraph{}\textbf{Redefinição condicional}\\
+
+Com isso, a classe do objeto a ser criado e populado é definida em tempo de execução! Na expressão da condição, podem ser usados valores de campos já atribuídos na classe anterior, utilizando o sinal de cifrão.
+No exemplo abaixo, as classes \textit{SITVN601R1} e \textit{SITVN601R3} estendem a \textit{SITVN601}, e a decisão sobre qual delas criar fica a critério da análise da expressão lógica. Existe ainda, através do \textit{método de redefinição}, a opção de copiar atributos comuns da classe herdada, a fim de deixar o código mais limpo.
+
+\begin{verbatim}
+<lista nome="registros" classe="gov.pr.detran.veiculos.pojo.SITVN601" qtd="$qtde">
+	<campo nome="evento" tipo="Integer" tam="4"/>
+	<campo nome="codTransacao" tipo="Integer" tam="3"/>
+	<campo nome="tipoRegistro" tipo="Byte" tam="1"/>
+	<redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R1" condicao="$tipoRegistro == 1">
+		<campo nome="placa" tipo="String" tam="7"/>
+		<campo nome="renavam" tipo="Long" tam="9"/>
+		<campo nome="tipoVeiculo" tipo="Short" tam="2"/>
+	</redefinicao>
+	<redefinicao metodo="copiar-atributos" classe="gov.pr.detran.veiculos.pojo.SITVN601R3" condicao="$tipoRegistro == 3">
+		<campo nome="numProtocolo" tipo="Long" tam="16"/>
+		<campo nome="codMotivoPrincipal" tipo="Short" tam="2"/>
+	</redefinicao>
+\end{verbatim}
+
+\subsubsection*{Versão 1.5}
+\paragraph{}\textbf{Acesso ao mapeamento}\\
+
+Agora o acesso ao arquivo \textbf{natapi.xml} é feito através de pesquisa nos recursos do aplicativo, e não mais externamente. Da maneira anterior não funcionava se o sistema fosse "empacotado" num arquivo \textbf{WAR}.
+
+\subsection*{TODO LIST}
+Possíveis funcionalidades apresentadas com a utilização da biblioteca.
+
+\subsubsection*{Melhorias}
+\paragraph{}\textbf{Criação condicional}\\
+
+No retorno de listas com a quantidade de itens fixos, o \textbf{HiberNatural} cria todos os itens, populando os campos com "0" ou "".
+Seria interessante que houvesse um atributo onde a condição de existência de um item pudesse ser testada antes de criá-lo (ou não).
+
+\begin{verbatim}
+	<lista nome="motivosCombinados" classe="gov.pr.detran.veiculos.pojo.MotivoCombinado" qtd="6" criacao="codMotivoCombinado > 0">
+		<campo nome="codMotivoCombinado" tipo="Byte" tam="2"/>
+	</lista>
+\end{verbatim}
+
+
+\hrulefill{}
+
+
+\includegraphics{lt_celepar.gif}
+© 2006 Companhia de Informática do Paraná - CELEPAR
+\htmladdnormallink{http://www.pr.gov.br/}{http://www.pr.gov.br/}
+\includegraphics{t2tpowered.png}
+
+
+% LaTeX2e code generated by txt2tags 2.3 (http://txt2tags.sf.net)
+% cmdline: txt2tags -t tex -o hibernatural.tex hibernatural.t2t
+\end{document}

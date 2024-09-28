@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# gerar LaTEX
+txt2tags -t tex -o hibernatural.tex hibernatural.t2t
+
+# gerar XHTML
+txt2tags -t xhtml --toc -o hibernatural.htm hibernatural.t2t
+firefox hibernatural.htm

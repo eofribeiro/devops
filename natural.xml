@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<natural-defs>	
+ 
+	<aplicacao nome="FIH">
+		<opcoes>
+			<!-- DESENV -->
+			<chave>000999</chave>
+			<senha>TESTE</senha>
+			<ambiente>D</ambiente>
+			<host>10.99.60.99</host>
+			<porta>31102</porta>
+
+		</opcoes>
+
+		<default>
+			<usuario>N000FIH</usuario>
+			<middleware>dbcon</middleware>
+		</default>		
+		<programa nome="FIH9NERR" descricao="Verifica situação interna do mainframe" />
+	</aplicacao>
+		
+
+</natural-defs>
