@@ -83,7 +83,7 @@ public class Escola {
 
 	private boolean intValido(String s) {
 		try {
-			Integer.parseInt(s); // M�todo est�tico, que tenta tranformar uma string em inteiro
+			Integer.parseInt(s); // Metodo estatico, que tenta tranformar uma string em inteiro
 			return true;
 		} catch (NumberFormatException e) { // Não conseguiu tranformar em inteiro e gera erro
 			return false;
@@ -94,7 +94,7 @@ public class Escola {
 
 		//Enquanto não for possível converter o valor de entrada para inteiro, permanece no loop
 		while (!this.intValido(entrada)) {
-			entrada = JOptionPane.showInputDialog(null, nomeCampo + " incorreta!\n\nDigite um n�mero inteiro.");
+			entrada = JOptionPane.showInputDialog(null, nomeCampo + " incorreta!\n\nDigite um número inteiro.");
 		}
 		
 		numInt = Integer.parseInt(entrada);
@@ -103,7 +103,7 @@ public class Escola {
 	}
 
 	/**
-	 * Salva os estudantes que est�o na mem�ria junto com os estudantes que est�o na base
+	 * Salva os estudantes que estao na memoria junto com os estudantes que estao na base
 	 * 
 	 * @return
 	 */
