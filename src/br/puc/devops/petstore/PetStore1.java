@@ -40,7 +40,7 @@ public class PetStore1 {
 
 	public void excluirAnimais() {
 		mamiferos.clear();
-		System.out.println("Animais excluÃ­dos com sucesso!\n");
+		System.out.println("Animais excluídos com sucesso!\n");
 	}
 	public void gravarAnimais()  {
 		ObjectOutputStream outputStream = null;

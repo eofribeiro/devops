@@ -32,7 +32,7 @@ public class Redefinicao extends Objeto {
     }
     
     /**
-     * Faz a validação da expressão condicional da redefinição.
+     * Faz a validacao da expressão condicional da redefinição.
      * Ex: "$tipoRegistro == 1", "$campo1 < $campo3", "5 >= $campo2"
      * Sim, o código não está nada tragável... Quando tiver tempo, a gente arruma!
      * @return boolean

@@ -720,7 +720,7 @@ public class Natural {
 //				}
 //
 //				strRet = sb.toString();
-//				//strRet = URLDecoder.decode(sb.toString(), "ISO-8859-1"); // n√£o deu certo
+//				//strRet = URLDecoder.decode(sb.toString(), "ISO-8859-1"); // n„o deu certo
 //				//LOGGER.info("RETORNO DECODIFICADO =" + strRet);
 //			} catch (Exception e) {
 //				LOGGER.error("ERRO NA COMUNICACAO COM O JASPIN : ", e);

@@ -11,15 +11,15 @@ public class PreEscolar extends Estudante {
 
 	public PreEscolar(int matricula, String nome, int idade, String responsavel) {
 		super(matricula, nome, idade, responsavel);
-		this.nivel = "Ensino PrÃ©-Escolar";
+		this.nivel = "Ensino Pré-Escolar";
 	}
 
 	@Override
 	public String cuidados() {
-		String cuidados = "1. Ficha mÃ©dica para verificar restriÃ§Ãµes de saÃºde.\n 2. Ficha de alimentaÃ§Ã£o e cuidados familiares.\n 3. Em caso de febre acima de 38,5 graus, acionar o responsÃ¡vel";
+		String cuidados = "1. Ficha médica para verificar restrições de saúde.\n 2. Ficha de alimentação e cuidados familiares.\n 3. Em caso de febre acima de 38,5 graus, acionar o responsável";
 		
 		if(this.getIdade() < 4) {
-			cuidados += "\n 4. Trocas de fraldas no mÃ¡ximo de 3 em 3 horas";			
+			cuidados += "\n 4. Trocas de fraldas no máximo de 3 em 3 horas";			
 		}
 		
 		return cuidados;
@@ -27,7 +27,7 @@ public class PreEscolar extends Estudante {
 
 	@Override
 	public String atividades() {
-		String atividades = "1. MusicalizaÃ§Ã£o \n 2.Brinquedos sensoriais \n 3. Hora da histÃ³ria \n 4. Descobrindo os alimentos";
+		String atividades = "1. Musicalização \n 2.Brinquedos sensoriais \n 3. Hora da história \n 4. Descobrindo os alimentos";
 		return atividades;
 	}
 

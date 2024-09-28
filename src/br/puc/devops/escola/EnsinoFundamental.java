@@ -15,19 +15,19 @@ public class EnsinoFundamental extends Estudante {
 
 	@Override
 	public String cuidados() {
-		String cuidados = "1. Ficha m√©dica e cuidados familiares.\n 2.  √â necess√°rio 1 monitor para cada 5 alunos";
+		String cuidados = "1. Ficha mÈdica e cuidados familiares.\n 2.  …â necess·rio 1 monitor para cada 5 alunos";
 		return cuidados;
 	}
 
 	@Override
 	public String atividades() {
-		String atividades = "1. Jud√¥ \n 2.Nata√ß√£o \n 3. Rob√≥tica \n 4. Xadrez";
+		String atividades = "1. JudÙ \n 2.NataÁ„o \n 3. RobÛtica \n 4. Xadrez";
 		return atividades;
 	}
 
 	@Override
 	public String oficinas() {
-		String oficinas = "1. Reda√ß√£o \n 2. Constru√ß√£o de brinquedos com materiais recicl√°veis \n 3. Clube da Matem√°tica";
+		String oficinas = "1. RedaÁ„o \n 2. ConstruÁ„o de brinquedos com materiais recicl·veis \n 3. Clube da Matem·tica";
 		return oficinas;
 	}
 

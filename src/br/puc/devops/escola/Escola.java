@@ -38,8 +38,8 @@ public class Escola {
 	public PreEscolar lePreEscolar (){
 
 		String [] valores = new String [4];
-		String [] nomeVal = {"MatrÃ­cula", "Nome", "Idade", "ResponsÃ¡vel"};
-		valores = leValores (nomeVal, "[PrÃ©]");
+		String [] nomeVal = {"Matrícula", "Nome", "Idade", "Responsável"};
+		valores = leValores (nomeVal, "[Pré]");
 
 		int matricula = this.retornaInteiro(valores[0], nomeVal[0]);
 		String nome = (valores[1]);
@@ -54,7 +54,7 @@ public class Escola {
 	public EnsinoFundamental leEnsinoFundamental (){
 
 		String [] valores = new String [4];
-		String [] nomeVal = {"MatrÃ­cula", "Nome", "Idade", "ResponsÃ¡vel"};
+		String [] nomeVal = {"Matrícula", "Nome", "Idade", "Responsável"};
 		valores = leValores (nomeVal, "[EF]");
 
 		int matricula = this.retornaInteiro(valores[0], nomeVal[0]);
@@ -69,7 +69,7 @@ public class Escola {
 	public EnsinoMedio leEnsinoMedio (){
 
 		String [] valores = new String [4];
-		String [] nomeVal = {"MatrÃ­cula", "Nome", "Idade", "ResponsÃ¡vel"};
+		String [] nomeVal = {"Matrícula", "Nome", "Idade", "Responsável"};
 		valores = leValores (nomeVal, "[EM]");
 
 		int matricula = this.retornaInteiro(valores[0], nomeVal[0]);
@@ -85,16 +85,16 @@ public class Escola {
 		try {
 			Integer.parseInt(s); // Metodo estatico, que tenta tranformar uma string em inteiro
 			return true;
-		} catch (NumberFormatException e) { // NÃ£o conseguiu tranformar em inteiro e gera erro
+		} catch (NumberFormatException e) { // Não conseguiu tranformar em inteiro e gera erro
 			return false;
 		}
 	}
 	public int retornaInteiro(String entrada, String nomeCampo) { // retorna um valor inteiro
 		int numInt;
 
-		//Enquanto nÃ£o for possÃ­vel converter o valor de entrada para inteiro, permanece no loop
+		//Enquanto não for possível converter o valor de entrada para inteiro, permanece no loop
 		while (!this.intValido(entrada)) {
-			entrada = JOptionPane.showInputDialog(null, nomeCampo + " incorreta!\n\nDigite um nÃºmero inteiro.");
+			entrada = JOptionPane.showInputDialog(null, nomeCampo + " incorreta!\n\nDigite um número inteiro.");
 		}
 		
 		numInt = Integer.parseInt(entrada);
@@ -114,7 +114,7 @@ public class Escola {
 	}
 	
 	/**
-	 * Antes de salvar, precisa recuperar para nÃ£o sobrescrever o que jï¿½ estava no arquivo
+	 * Antes de salvar, precisa recuperar para não sobrescrever o que jï¿½ estava no arquivo
 	 * @param mamiferos
 	 */
 	public int salvarEstudantes (ArrayList<Estudante> lstEstudantes){
@@ -131,7 +131,7 @@ public class Escola {
 			}
 			
 		} catch (FileNotFoundException ex) {
-			JOptionPane.showMessageDialog(null,"ImpossÃ­vel criar arquivo!");
+			JOptionPane.showMessageDialog(null,"Impossível criar arquivo!");
 			ex.printStackTrace();
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -205,12 +205,12 @@ public class Escola {
 
 		do {
 			menu = "Controle Grupo Escolar\n" +
-					"OpÃ§Ãµes:\n" + 
+					"Opções:\n" + 
 					"1. Cadastrar Estudante\n" +
-					"2. Exibir Estudantes nÃ£o gravados\n" +
-					"3. Limpar Estudantes nÃ£o gravados\n" +
+					"2. Exibir Estudantes não gravados\n" +
+					"3. Limpar Estudantes não gravados\n" +
 					"4. Gravar Estudantes\n" +
-					"5. Exibir Lista de Estudantes (Gravados e nÃ£o gravados)\n" +
+					"5. Exibir Lista de Estudantes (Gravados e não gravados)\n" +
 					"6. Excluir Estudante\n" +
 					"7. Limpar Base\n" +					
 					"9. Sair";
@@ -219,16 +219,16 @@ public class Escola {
 			if(entrada == null) { // clicou no cancelar
 				opc1 = 9;
 			} else {
-				opc1 = this.retornaInteiro(entrada, "OpÃ§Ã£o");
+				opc1 = this.retornaInteiro(entrada, "Opção");
 			}
 
 			switch (opc1) {
 			case 1:// Entrar dados
 				menu = "Cadastro de Estudante\n" +
-						"OpÃ§Ãµes:\n" + 
-						"1. PrÃ©-Escola\n" +
+						"Opções:\n" + 
+						"1. Pré-Escola\n" +
 						"2. Ensino Fundamental\n" +
-						"3. Ensino MÃ©dio\n" +
+						"3. Ensino Médio\n" +
 						"4. Voltar\n";
 
 				entrada = JOptionPane.showInputDialog (menu + "\n\n");
@@ -236,7 +236,7 @@ public class Escola {
 				if(entrada == null) {
 					opc2 = 4;
 				} else {
-					opc2 = this.retornaInteiro(entrada, "OpÃ§Ã£o");
+					opc2 = this.retornaInteiro(entrada, "Opção");
 				}
 
 				switch (opc2){
@@ -252,19 +252,19 @@ public class Escola {
 				case 4:
 					break;				
 				default: 
-					JOptionPane.showMessageDialog(null,"OpÃ§Ã£o "+opc2+" nÃ£o existe. Tente novamente.");
+					JOptionPane.showMessageDialog(null,"Opção "+opc2+" não existe. Tente novamente.");
 				}
 				break;
 			case 2: // Exibir dados
 				if (estudantes.size() == 0) {
-					JOptionPane.showMessageDialog(null,"NÃ£o existem estudantes nÃ£o gravados.");
+					JOptionPane.showMessageDialog(null,"Não existem estudantes não gravados.");
 					break;
 				}				
 				exibirEstudantes(this.estudantes);
 				break;
 			case 3: // Limpar Dados
 				if (estudantes.size() == 0) {
-					JOptionPane.showMessageDialog(null,"NÃ£o existem novos estudantes cadastrados.");
+					JOptionPane.showMessageDialog(null,"Não existem novos estudantes cadastrados.");
 					break;
 				}
 				estudantes.clear();
@@ -272,13 +272,13 @@ public class Escola {
 				break;
 			case 4: // Grava Dados
 				if (estudantes.size() == 0) {
-					JOptionPane.showMessageDialog(null,"NÃ£o existem estudantes novos para salvar.");
+					JOptionPane.showMessageDialog(null,"Não existem estudantes novos para salvar.");
 					break;
 				}
 				int qtde = salvarEstudantes(); // salva os registros da memï¿½ria na base
 				String msg = "";
 				if(qtde > 0) {
-					msg = "Base de alunos atualizada. Os registros em memÃ³ria foram limpos. Veja a listagem completa no menu [5. Recuperar Estudantes]"; 				
+					msg = "Base de alunos atualizada. Os registros em memória foram limpos. Veja a listagem completa no menu [5. Recuperar Estudantes]"; 				
 				} else {
 					msg = "Nenhum registro novo foi salvo";
 				}
@@ -288,7 +288,7 @@ public class Escola {
 			case 5: // Recupera Dados
 					ArrayList<Estudante> estudantesTmp = recuperarEstudantes();
 					if (estudantesTmp.size() == 0) {
-						JOptionPane.showMessageDialog(null,"Sem dados para apresentar. NÃ£o existem estudantes na base de dados.");
+						JOptionPane.showMessageDialog(null,"Sem dados para apresentar. Não existem estudantes na base de dados.");
 						break;
 					} else {
 						exibirEstudantes(estudantesTmp);
@@ -298,19 +298,19 @@ public class Escola {
 				ArrayList<Estudante> lstEstudantesBase = recuperarEstudantes();
 				
 				if(this.estudantes.isEmpty() && lstEstudantesBase.isEmpty()) {
-					JOptionPane.showMessageDialog(null,"Sem dados para apresentar. NÃ£o existem estudantes na base de dados nem na memÃ³ria.");
+					JOptionPane.showMessageDialog(null,"Sem dados para apresentar. Não existem estudantes na base de dados nem na memória.");
 					break;
 				}
 				
 				String [] valores = new String [1];
-				String [] nomeVal = {"MatrÃ­cula"};
+				String [] nomeVal = {"Matrícula"};
 				valores = leValores (nomeVal, "");
 				
 				int matricula = this.retornaInteiro(valores[0], nomeVal[0]);
 				int qtdeMemoria = excluirEstudante(estudantes, matricula, false);
 				int qtdeBase = excluirEstudante(lstEstudantesBase, matricula, true);
 				
-				JOptionPane.showMessageDialog(null,"Foram excluÃ­dos ["+qtdeMemoria+"] estudantes da memÃ³ria e ["+qtdeBase+"] estudantes da base da escola.");
+				JOptionPane.showMessageDialog(null,"Foram excluídos ["+qtdeMemoria+"] estudantes da memória e ["+qtdeBase+"] estudantes da base da escola.");
 				break;
 			case 7:
 				String msgExclusao = limparBase();
@@ -327,7 +327,7 @@ public class Escola {
 		ArrayList<Estudante> estudantesSalvos = recuperarEstudantes();
 		
 		if(estudantesSalvos.isEmpty()) {
-			return "NÃ£o existem estudantes cadastrados na base de dados";
+			return "Não existem estudantes cadastrados na base de dados";
 		}
 		
 		if(!estudantesSalvos.isEmpty()) {
@@ -347,7 +347,7 @@ public class Escola {
 						outputStream.writeObject("");
 					//Limpar os estudantes da memï¿½ria					
 				} catch (FileNotFoundException ex) {
-					JOptionPane.showMessageDialog(null,"ImpossÃ­vel apagar arquivo!");
+					JOptionPane.showMessageDialog(null,"Impossível apagar arquivo!");
 					ex.printStackTrace();
 				} catch (IOException ex) {
 					ex.printStackTrace();
@@ -394,7 +394,7 @@ public class Escola {
 	
 	private void exibirEstudantes(ArrayList<Estudante> lstEstudantes) {
 		if (lstEstudantes.size() == 0) {
-			JOptionPane.showMessageDialog(null,"NÃ£o existem estudantes cadastrados.");			
+			JOptionPane.showMessageDialog(null,"Não existem estudantes cadastrados.");			
 		} else {
 			String dados = "";
 			for (int i=0; i < lstEstudantes.size(); i++)	{
@@ -407,7 +407,7 @@ public class Escola {
 			textArea.setLineWrap(true);  
 			textArea.setWrapStyleWord(true); 
 			scrollPane.setPreferredSize( new Dimension( 800, 500 ));
-			JOptionPane.showMessageDialog(null, scrollPane, "Estudantes cadastrados e em memÃ³ria", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, scrollPane, "Estudantes cadastrados e em memória", JOptionPane.INFORMATION_MESSAGE);
 			
 		}
 	}

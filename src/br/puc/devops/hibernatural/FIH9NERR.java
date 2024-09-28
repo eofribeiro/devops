@@ -1,7 +1,7 @@
 package br.puc.devops.hibernatural;
 
 /**
- * Verifica situação ADABAS para ativar a contingência para portal nacional GNRE
+ * Verifica situa��o ADABAS para ativar a contingência para portal nacional GNRE
  */
 public class FIH9NERR implements java.io.Serializable {
 
