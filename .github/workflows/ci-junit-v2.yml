@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      #- run: npm install                       # install packages        
+      - run: npm install                       # install packages        
       - name: Build and Run Tests
         run: npm test # execute your tests generating test results
       - name: Publish Test Report
