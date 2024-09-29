@@ -1,7 +1,7 @@
 name: 'Test Report'
 on:
   workflow_run:
-    workflows: ['CI-JUNIT-V5']                     # runs after CI workflow
+    workflows: ['CI-JUNIT-V4']                     # runs after CI workflow
     types:
       - completed
 permissions:

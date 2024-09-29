@@ -15,7 +15,7 @@ public class EnsinoFundamental extends Estudante {
 
 	@Override
 	public String cuidados() {
-		String cuidados = "1. Ficha médica e cuidados familiares.\n 2.  É‰ necessário 1 monitor para cada 5 alunos";
+		String cuidados = "1. Ficha médica e cuidados familiares.\n 2. É‰ necessário 1 monitor para cada 5 alunos";
 		return cuidados;
 	}
 
