@@ -24,7 +24,8 @@ jobs:
         #run: mvn -B package --file pom.xml
 
       - name: Test
-        run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+        #run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+        run: mvn clean test -Dtest= br/puc/devops/test/UnitTests.java
 
       - name: Report
         uses: dorny/test-reporter@v1
