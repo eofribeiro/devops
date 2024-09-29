@@ -17,7 +17,8 @@ jobs:
         run: mvn -B package --file pom.xml
 
       - name: Test
-        run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+        #run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+        run: mvn clean test -pl :devops -Dtest=UnitTests
                 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
