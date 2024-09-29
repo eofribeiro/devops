@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class EscolaExemplo {
 
-	private static final String PATH_ARQUIVO = "c:\\temp\\grupo95-evelyne-escola-exemplo.dat";
+	private static final String PATH_ARQUIVO = "/home/runner/work/devops/devops/src/evelyne-escola-exemplo.dat";
 	private ArrayList<Estudante> estudantes;
 
 	public EscolaExemplo() {

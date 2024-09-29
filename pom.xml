@@ -203,7 +203,7 @@
 	</dependencies>
 	<build>
 		<sourceDirectory>src/br/puc/devops</sourceDirectory>
-		<testSourceDirectory>src/test/resources</testSourceDirectory>		
+		<testSourceDirectory>src/br/puc/devops/test</testSourceDirectory>		
 		<finalName>devops</finalName>
 		<resources>
 			<resource>
@@ -261,6 +261,15 @@
 			</plugin>
 		</plugins>
 	</build>
+ 	<reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.19.1</version>
+            </plugin>
+        </plugins>
+    </reporting>	
 	<profiles>
 		<profile>
 			<id>local</id>

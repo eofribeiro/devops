@@ -19,7 +19,7 @@ import javax.swing.JTextArea;
 
 public class Escola {
 	
-	private static final String PATH_ARQUIVO = "c:\\temp\\evelyne-escola.dados";
+	private static final String PATH_ARQUIVO = "/home/runner/work/devops/devops/src/evelyne-escola.dados";
 	
 	private ArrayList<Estudante> estudantes;
 
